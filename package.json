@@ -1,0 +1,45 @@
+{
+  "name": "trafficlight-record",
+  "version": "1.0.0",
+  "description": "A simple app to record how many times you find a traffic light red or green",
+  "main": "index.js",
+  "scripts": {
+    "test": "elm-test --watch",
+    "make": "elm make ./src/App.elm --output ./app.js",
+    "makeDebug": "elm make ./src/App.elm --debug --output ./app.js",
+    "watchElm": "chokidar ./src/**/*.elm -c \"npm run make\"",
+    "watchElmDebug": "chokidar ./src/**/*.elm -c \"npm run makeDebug\"",
+    "buildCss": "postcss ./src/*.css --use autoprefixer -d ./",
+    "watchCss": "postcss ./src/*.css --use autoprefixer -w -d ./",
+    "server": "live-server --port=8080 --entry-file=./index.html",
+    "dev": "parallelshell \"npm run watchElm\" \"npm run watchCss\" \"npm run server\"",
+    "debug": "parallelshell \"npm run watchElmDebug\" \"npm run watchCss\" \"npm run server\"",
+    "buildDb": "node_modules\\.bin\\webpack --config webpack.config.js"
+  },
+  "keywords": [],
+  "author": "Francesco Bedussi",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^7.2.3",
+    "chokidar-cli": "^1.2.0",
+    "live-server": "^1.2.0",
+    "parallelshell": "^3.0.2",
+    "postcss-cli": "^4.1.1",
+    "webpack": "^3.10.0"
+  },
+  "config": {
+    "db": "firebase",
+    "authentication": false,
+    "firebase": {
+      "apiKey": "AIzaSyDIZTG4420xIbnLnRNEKMIFgwJBy4fwwG4",
+      "authDomain": "trafficlight-record.firebaseapp.com",
+      "databaseURL": "https://trafficlight-record.firebaseio.com",
+      "projectId": "trafficlight-record",
+      "storageBucket": "trafficlight-record.appspot.com",
+      "messagingSenderId": "72865612665"
+    }
+  },
+  "dependencies": {
+    "firebase": "^4.8.1"
+  }
+}

@@ -1,0 +1,34 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
+    <title>My Elm App</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div id="main"></div>
+    <script src="db.js"></script>
+    <script src="app.js"></script>
+    <script>
+        var node = document.getElementById('main');
+        var app = Elm.App.embed(node);
+
+        app.ports.sendCmdToFirebase.subscribe(function(cmd) {
+            debugger;
+            dbInterface[cmd.name](cmd.payload)
+                .then((result, error) => {
+                    debugger;
+                    var result = {
+                        north: [true],
+                        south: [false],
+                        east: [true, false],
+                        west: [false, true]};
+                    app.ports.listenToFirebaseResponse.send(error || result)
+                })
+        });
+    </script>
+</body>
+
+</html>
