@@ -21,8 +21,13 @@ type alias Data =
     }
 
 
+type alias JsonString =
+    String
+
+
 type alias FirebaseCmd =
     { name : String
+    , payload : JsonString
     }
 
 

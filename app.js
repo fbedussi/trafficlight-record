@@ -10236,9 +10236,10 @@ var _fbedussi$elm_boilerplate$Models$Data = F4(
 	function (a, b, c, d) {
 		return {north: a, south: b, east: c, west: d};
 	});
-var _fbedussi$elm_boilerplate$Models$FirebaseCmd = function (a) {
-	return {name: a};
-};
+var _fbedussi$elm_boilerplate$Models$FirebaseCmd = F2(
+	function (a, b) {
+		return {name: a, payload: b};
+	});
 var _fbedussi$elm_boilerplate$Models$NotFoundRoute = {ctor: 'NotFoundRoute'};
 var _fbedussi$elm_boilerplate$Models$Page1 = {ctor: 'Page1'};
 var _fbedussi$elm_boilerplate$Models$Home = {ctor: 'Home'};
@@ -10246,7 +10247,7 @@ var _fbedussi$elm_boilerplate$Models$Home = {ctor: 'Home'};
 var _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebase = _elm_lang$core$Native_Platform.outgoingPort(
 	'sendCmdToFirebase',
 	function (v) {
-		return {name: v.name};
+		return {name: v.name, payload: v.payload};
 	});
 var _fbedussi$elm_boilerplate$Firebase$listenToFirebaseResponse = _elm_lang$core$Native_Platform.incomingPort(
 	'listenToFirebaseResponse',
@@ -10318,12 +10319,25 @@ var _fbedussi$elm_boilerplate$Routing$parseLocation = function (location) {
 };
 
 var _fbedussi$elm_boilerplate$Init$init = function (location) {
+	var readAllPayload = _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'storeName',
+				_1: _elm_lang$core$Json_Encode$string('data')
+			},
+			_1: {ctor: '[]'}
+		});
 	var currentRoute = _fbedussi$elm_boilerplate$Routing$parseLocation(location);
 	return {
 		ctor: '_Tuple2',
 		_0: _fbedussi$elm_boilerplate$Models$resetModel(currentRoute),
 		_1: _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebase(
-			{name: 'readAll'})
+			A2(
+				_fbedussi$elm_boilerplate$Models$FirebaseCmd,
+				'readAll',
+				A2(_elm_lang$core$Json_Encode$encode, 0, readAllPayload)))
 	};
 };
 

@@ -16,16 +16,9 @@
         var app = Elm.App.embed(node);
 
         app.ports.sendCmdToFirebase.subscribe(function(cmd) {
-            debugger;
-            dbInterface[cmd.name](cmd.payload)
+            dbInterface[cmd.name](JSON.parse(cmd.payload))
                 .then((result, error) => {
-                    debugger;
-                    var result = {
-                        north: [true],
-                        south: [false],
-                        east: [true, false],
-                        west: [false, true]};
-                    app.ports.listenToFirebaseResponse.send(error || result)
+                    app.ports.listenToFirebaseResponse.send(error || result[0])
                 })
         });
     </script>
