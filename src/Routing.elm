@@ -10,7 +10,7 @@ matchers : Parser (Route -> a) a
 matchers =
     oneOf
         [ map Home top
-        , map Page1 (s "page1")
+        , map History (s "history")
         ]
 
 

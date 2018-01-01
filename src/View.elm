@@ -1,14 +1,13 @@
 module View exposing (..)
 
+import Graphics exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Icons exposing (..)
 import Json.Decode as Decode
 import List exposing (map)
 import Models exposing (..)
 import Msgs exposing (..)
-import TouchEvents exposing (onTouchStart)
 
 
 onLinkClick : msg -> Attribute msg
@@ -24,18 +23,12 @@ onLinkClick message =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ page model ]
-
-
-page : Model -> Html Msg
-page model =
     case model.route of
         Models.Home ->
             homePage model
 
-        Models.Page1 ->
-            page1
+        Models.History ->
+            history model
 
         Models.NotFoundRoute ->
             notFoundView
@@ -48,47 +41,129 @@ notFoundView =
         ]
 
 
-renderVal : Bool -> Html Msg
-renderVal val =
-    let
-        label =
-            if val == True then
-                "green"
-            else
-                "red"
-    in
+getColorLabel : Color -> String
+getColorLabel color =
+    case color of
+        Red ->
+            "red"
+
+        Green ->
+            "green"
+
+
+renderColor : Color -> Html Msg
+renderColor color =
     span []
-        [ text label ]
+        [ getColorLabel color |> text ]
+
+
+extractDirectionData : Model -> Direction -> List Color
+extractDirectionData model direction =
+    case direction of
+        North ->
+            model.data.north
+
+        South ->
+            model.data.south
+
+        East ->
+            model.data.east
+
+        West ->
+            model.data.west
+
+
+getPercentage : Model -> Direction -> Color -> String
+getPercentage model direction color =
+    let
+        colors =
+            extractDirectionData model direction
+
+        colorsLenght =
+            List.length colors
+
+        colorsFiltered =
+            List.filter (\item -> item == color) colors
+
+        colorsFilteredLength =
+            List.length colorsFiltered
+
+        percentage =
+            round (toFloat colorsFilteredLength / toFloat colorsLenght * 100)
+    in
+    toString percentage
 
 
 homePage : Model -> Html Msg
 homePage model =
-    div [ class "homePage" ]
+    let
+        historyPath =
+            "/history"
+    in
+    div
+        [ class "homePage" ]
+        [ div
+            [ class "topContainer" ]
+            [ div
+                [ class "dataContainer" ]
+                [ text ("red: " ++ getPercentage model North Red ++ "%") ]
+            , trafficLight North
+            , div
+                [ class "dataContainer" ]
+                [ text ("green: " ++ getPercentage model North Green ++ "%") ]
+            ]
+        , div
+            [ class "middleContainer" ]
+            [ trafficLight West
+            , div
+                [ class "compassContainer" ]
+                [ compass () ]
+            , trafficLight East
+            ]
+        , div
+            [ class "bottomContainer" ]
+            [ trafficLight South ]
+        , a
+            [ class "historyLink"
+            , href historyPath
+            , onLinkClick (ChangeLocation historyPath)
+            ]
+            [ text "data history" ]
+        ]
+
+
+history : Model -> Html Msg
+history model =
+    let
+        homePath =
+            "/"
+    in
+    div
+        [ class "history" ]
         [ div [ class "north" ]
             (List.map
-                renderVal
+                renderColor
                 model.data.north
             )
         , div [ class "south" ]
             (List.map
-                renderVal
+                renderColor
                 model.data.south
             )
         , div [ class "east" ]
             (List.map
-                renderVal
+                renderColor
                 model.data.east
             )
         , div [ class "west" ]
             (List.map
-                renderVal
+                renderColor
                 model.data.west
             )
+        , a
+            [ class "homeLink"
+            , href homePath
+            , onLinkClick (ChangeLocation homePath)
+            ]
+            [ text "data history" ]
         ]
-
-
-page1 : Html Msg
-page1 =
-    div
-        []
-        [ text "page1" ]

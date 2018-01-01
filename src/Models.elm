@@ -9,15 +9,27 @@ type alias Model =
 
 type Route
     = Home
-    | Page1
+    | History
     | NotFoundRoute
 
 
+type Direction
+    = North
+    | South
+    | East
+    | West
+
+
+type Color
+    = Red
+    | Green
+
+
 type alias Data =
-    { north : List Bool
-    , south : List Bool
-    , east : List Bool
-    , west : List Bool
+    { north : List Color
+    , south : List Color
+    , east : List Color
+    , west : List Color
     }
 
 

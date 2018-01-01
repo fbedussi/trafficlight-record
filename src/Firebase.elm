@@ -1,9 +1,10 @@
 port module Firebase exposing (..)
 
-import Models exposing (Data, FirebaseCmd)
+import Json.Decode
+import Models exposing (..)
 
 
 port sendCmdToFirebase : FirebaseCmd -> Cmd msg
 
 
-port listenToFirebaseResponse : (Data -> msg) -> Sub msg
+port listenToFirebaseResponse : (Json.Decode.Value -> msg) -> Sub msg

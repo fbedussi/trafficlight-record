@@ -25,5 +25,34 @@ update msg model =
             , Cmd.none
             )
 
-        NewData data ->
+        NewData (Ok data) ->
             ( { model | data = data }, Cmd.none )
+
+        NewData (Err _) ->
+            ( model, Cmd.none )
+
+        RegisterColor direction color ->
+            ( updateColorInModel model direction color, Cmd.none )
+
+
+updateColorInModel : Model -> Direction -> Color -> Model
+updateColorInModel model direction color =
+    let
+        newData =
+            model.data
+    in
+    { model
+        | data =
+            case direction of
+                North ->
+                    { newData | north = List.append model.data.north [ color ] }
+
+                South ->
+                    { newData | south = List.append model.data.south [ color ] }
+
+                East ->
+                    { newData | east = List.append model.data.east [ color ] }
+
+                West ->
+                    { newData | west = List.append model.data.west [ color ] }
+    }

@@ -10241,51 +10241,26 @@ var _fbedussi$elm_boilerplate$Models$FirebaseCmd = F2(
 		return {name: a, payload: b};
 	});
 var _fbedussi$elm_boilerplate$Models$NotFoundRoute = {ctor: 'NotFoundRoute'};
-var _fbedussi$elm_boilerplate$Models$Page1 = {ctor: 'Page1'};
+var _fbedussi$elm_boilerplate$Models$History = {ctor: 'History'};
 var _fbedussi$elm_boilerplate$Models$Home = {ctor: 'Home'};
+var _fbedussi$elm_boilerplate$Models$West = {ctor: 'West'};
+var _fbedussi$elm_boilerplate$Models$East = {ctor: 'East'};
+var _fbedussi$elm_boilerplate$Models$South = {ctor: 'South'};
+var _fbedussi$elm_boilerplate$Models$North = {ctor: 'North'};
+var _fbedussi$elm_boilerplate$Models$Green = {ctor: 'Green'};
+var _fbedussi$elm_boilerplate$Models$Red = {ctor: 'Red'};
 
 var _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebase = _elm_lang$core$Native_Platform.outgoingPort(
 	'sendCmdToFirebase',
 	function (v) {
 		return {name: v.name, payload: v.payload};
 	});
-var _fbedussi$elm_boilerplate$Firebase$listenToFirebaseResponse = _elm_lang$core$Native_Platform.incomingPort(
-	'listenToFirebaseResponse',
-	A2(
-		_elm_lang$core$Json_Decode$andThen,
-		function (north) {
-			return A2(
-				_elm_lang$core$Json_Decode$andThen,
-				function (south) {
-					return A2(
-						_elm_lang$core$Json_Decode$andThen,
-						function (east) {
-							return A2(
-								_elm_lang$core$Json_Decode$andThen,
-								function (west) {
-									return _elm_lang$core$Json_Decode$succeed(
-										{north: north, south: south, east: east, west: west});
-								},
-								A2(
-									_elm_lang$core$Json_Decode$field,
-									'west',
-									_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$bool)));
-						},
-						A2(
-							_elm_lang$core$Json_Decode$field,
-							'east',
-							_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$bool)));
-				},
-				A2(
-					_elm_lang$core$Json_Decode$field,
-					'south',
-					_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$bool)));
-		},
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'north',
-			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$bool))));
+var _fbedussi$elm_boilerplate$Firebase$listenToFirebaseResponse = _elm_lang$core$Native_Platform.incomingPort('listenToFirebaseResponse', _elm_lang$core$Json_Decode$value);
 
+var _fbedussi$elm_boilerplate$Msgs$RegisterColor = F2(
+	function (a, b) {
+		return {ctor: 'RegisterColor', _0: a, _1: b};
+	});
 var _fbedussi$elm_boilerplate$Msgs$NewData = function (a) {
 	return {ctor: 'NewData', _0: a};
 };
@@ -10304,8 +10279,8 @@ var _fbedussi$elm_boilerplate$Routing$matchers = _evancz$url_parser$UrlParser$on
 			ctor: '::',
 			_0: A2(
 				_evancz$url_parser$UrlParser$map,
-				_fbedussi$elm_boilerplate$Models$Page1,
-				_evancz$url_parser$UrlParser$s('page1')),
+				_fbedussi$elm_boilerplate$Models$History,
+				_evancz$url_parser$UrlParser$s('history')),
 			_1: {ctor: '[]'}
 		}
 	});
@@ -10341,8 +10316,47 @@ var _fbedussi$elm_boilerplate$Init$init = function (location) {
 	};
 };
 
+var _fbedussi$elm_boilerplate$Subscriptions$colorDecoder = A2(
+	_elm_lang$core$Json_Decode$andThen,
+	function (str) {
+		var _p0 = str;
+		switch (_p0) {
+			case 'red':
+				return _elm_lang$core$Json_Decode$succeed(_fbedussi$elm_boilerplate$Models$Red);
+			case 'green':
+				return _elm_lang$core$Json_Decode$succeed(_fbedussi$elm_boilerplate$Models$Green);
+			default:
+				return _elm_lang$core$Json_Decode$fail(
+					A2(_elm_lang$core$Basics_ops['++'], 'Unknown color: ', _p0));
+		}
+	},
+	_elm_lang$core$Json_Decode$string);
+var _fbedussi$elm_boilerplate$Subscriptions$decodeData = _elm_lang$core$Json_Decode$decodeValue(
+	A5(
+		_elm_lang$core$Json_Decode$map4,
+		_fbedussi$elm_boilerplate$Models$Data,
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'north',
+			_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)),
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'south',
+			_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)),
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'east',
+			_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)),
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'west',
+			_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder))));
 var _fbedussi$elm_boilerplate$Subscriptions$subscriptions = function (model) {
-	return _fbedussi$elm_boilerplate$Firebase$listenToFirebaseResponse(_fbedussi$elm_boilerplate$Msgs$NewData);
+	return _fbedussi$elm_boilerplate$Firebase$listenToFirebaseResponse(
+		function (_p1) {
+			return _fbedussi$elm_boilerplate$Msgs$NewData(
+				_fbedussi$elm_boilerplate$Subscriptions$decodeData(_p1));
+		});
 };
 
 var _fbedussi$elm_boilerplate$Helpers$example = function (_p0) {
@@ -10350,133 +10364,460 @@ var _fbedussi$elm_boilerplate$Helpers$example = function (_p0) {
 	return true;
 };
 
+var _fbedussi$elm_boilerplate$Update$updateColorInModel = F3(
+	function (model, direction, color) {
+		var newData = model.data;
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				data: function () {
+					var _p0 = direction;
+					switch (_p0.ctor) {
+						case 'North':
+							return _elm_lang$core$Native_Utils.update(
+								newData,
+								{
+									north: A2(
+										_elm_lang$core$List$append,
+										model.data.north,
+										{
+											ctor: '::',
+											_0: color,
+											_1: {ctor: '[]'}
+										})
+								});
+						case 'South':
+							return _elm_lang$core$Native_Utils.update(
+								newData,
+								{
+									south: A2(
+										_elm_lang$core$List$append,
+										model.data.south,
+										{
+											ctor: '::',
+											_0: color,
+											_1: {ctor: '[]'}
+										})
+								});
+						case 'East':
+							return _elm_lang$core$Native_Utils.update(
+								newData,
+								{
+									east: A2(
+										_elm_lang$core$List$append,
+										model.data.east,
+										{
+											ctor: '::',
+											_0: color,
+											_1: {ctor: '[]'}
+										})
+								});
+						default:
+							return _elm_lang$core$Native_Utils.update(
+								newData,
+								{
+									west: A2(
+										_elm_lang$core$List$append,
+										model.data.west,
+										{
+											ctor: '::',
+											_0: color,
+											_1: {ctor: '[]'}
+										})
+								});
+					}
+				}()
+			});
+	});
 var _fbedussi$elm_boilerplate$Update$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
 			case 'ChangeLocation':
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: _elm_lang$navigation$Navigation$newUrl(_p0._0)
+					_1: _elm_lang$navigation$Navigation$newUrl(_p1._0)
 				};
 			case 'OnLocationChange':
-				var newRoute = _fbedussi$elm_boilerplate$Routing$parseLocation(_p0._0);
+				var newRoute = _fbedussi$elm_boilerplate$Routing$parseLocation(_p1._0);
 				return {
 					ctor: '_Tuple2',
 					_0: A2(_fbedussi$elm_boilerplate$Models$Model, newRoute, model.data),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'NewData':
+				if (_p1._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{data: _p1._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			default:
 				return {
 					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{data: _p0._0}),
+					_0: A3(_fbedussi$elm_boilerplate$Update$updateColorInModel, model, _p1._0, _p1._1),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
 	});
 
-var _fbedussi$elm_boilerplate$Icons$icon = function (_p0) {
+var _fbedussi$elm_boilerplate$Graphics$compass = function (_p0) {
 	var _p1 = _p0;
 	return A2(
 		_elm_lang$svg$Svg$svg,
-		{ctor: '[]'},
-		{ctor: '[]'});
-};
-
-var _knledg$touch_events$TouchEvents$emptyTouch = {clientX: 0, clientY: 0};
-var _knledg$touch_events$TouchEvents$Touch = F2(
-	function (a, b) {
-		return {clientX: a, clientY: b};
-	});
-var _knledg$touch_events$TouchEvents$touchDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	_knledg$touch_events$TouchEvents$Touch,
-	A2(_elm_lang$core$Json_Decode$field, 'clientX', _elm_lang$core$Json_Decode$float),
-	A2(_elm_lang$core$Json_Decode$field, 'clientY', _elm_lang$core$Json_Decode$float));
-var _knledg$touch_events$TouchEvents$eventDecoder = F2(
-	function (msg, eventKey) {
-		return A2(
-			_elm_lang$core$Json_Decode$at,
-			{
+		{
+			ctor: '::',
+			_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 206.286 289'),
+			_1: {
 				ctor: '::',
-				_0: eventKey,
+				_0: _elm_lang$svg$Svg_Attributes$height('308.267'),
 				_1: {
 					ctor: '::',
-					_0: '0',
-					_1: {ctor: '[]'}
+					_0: _elm_lang$svg$Svg_Attributes$width('220.039'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$class('compass'),
+						_1: {ctor: '[]'}
+					}
 				}
-			},
-			A2(_elm_lang$core$Json_Decode$map, msg, _knledg$touch_events$TouchEvents$touchDecoder));
-	});
-var _knledg$touch_events$TouchEvents$onTouchEnd = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'touchend',
-		A2(_knledg$touch_events$TouchEvents$eventDecoder, msg, 'changedTouches'));
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$svg$Svg$path,
+				{
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$d('M37.466 151.322h139'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$fill('none'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$stroke('#000'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$strokeWidth('3.537'),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$svg$Svg$path,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$d('M106.966 245.771V56.873'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$fill('none'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$stroke('#000'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$strokeWidth('3.234'),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$svg$Svg$path,
+						{
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$d('M117.684 64.174H96.25l5.358-9.282 5.36-9.282 5.358 9.282z'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$stroke('#000'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$strokeWidth('4.022'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$strokeLinecap('round'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$strokeLinejoin('bevel'),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$svg$Svg$path,
+							{
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$d('M95.931 0h5.313l12.93 24.395V0h3.828v29.16h-5.313L99.76 4.766V29.16h-3.828V0z'),
+								_1: {ctor: '[]'}
+							},
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$svg$Svg$path,
+								{
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$d('M113.812 262.864v3.495q-2.04-.975-3.85-1.454-1.81-.48-3.496-.48-2.928 0-4.525 1.136-1.579 1.136-1.579 3.23 0 1.756 1.047 2.66 1.065.888 4.01 1.438l2.165.444q4.01.763 5.908 2.697 1.917 1.916 1.917 5.145 0 3.85-2.591 5.838-2.573 1.987-7.559 1.987-1.88 0-4.01-.426-2.111-.426-4.382-1.26v-3.69q2.182 1.224 4.276 1.845t4.116.621q3.07 0 4.738-1.206 1.668-1.207 1.668-3.443 0-1.951-1.207-3.052-1.189-1.1-3.921-1.65l-2.183-.425q-4.01-.799-5.802-2.502-1.792-1.704-1.792-4.738 0-3.513 2.467-5.536 2.484-2.022 6.83-2.022 1.864 0 3.798.337t3.957 1.011zM0 137.709h3.62L9.19 160.1l5.554-22.392h4.027l5.572 22.392 5.554-22.392h3.637l-6.654 26.49h-4.507l-5.589-22.995-5.642 22.996H6.636L0 137.709zM189.217 137.709h16.75v3.016H192.8v7.843h12.616v3.016H192.8v9.6h13.485v3.016h-17.069v-26.491z'),
+									_1: {ctor: '[]'}
+								},
+								{ctor: '[]'}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$svg$Svg$path,
+									{
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$d('M56.358 150.974a50.999 50.999 0 0 1 50.81-50.5 50.999 50.999 0 0 1 51.178 50.127 50.999 50.999 0 0 1-49.436 51.846 50.999 50.999 0 0 1-52.505-48.736'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$fill('none'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$stroke('#000'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$svg$Svg_Attributes$strokeWidth('4.039'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$svg$Svg_Attributes$strokeLinecap('round'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$svg$Svg_Attributes$strokeLinejoin('bevel'),
+															_1: {ctor: '[]'}
+														}
+													}
+												}
+											}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		});
 };
-var _knledg$touch_events$TouchEvents$onTouchStart = function (msg) {
+var _fbedussi$elm_boilerplate$Graphics$trafficLight = function (direction) {
 	return A2(
-		_elm_lang$html$Html_Events$on,
-		'touchstart',
-		A2(_knledg$touch_events$TouchEvents$eventDecoder, msg, 'touches'));
+		_elm_lang$svg$Svg$svg,
+		{
+			ctor: '::',
+			_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 62.579 159.553'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$height('170.19'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$width('66.751'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$class('trafficLight'),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$svg$Svg$g,
+				{
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$transform('translate(-219.734 -376.09)'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$svg$Svg$rect,
+						{
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$ry('12.923'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$y('379.047'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$x('222.69'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$height('153.64'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$width('56.665'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$fill('none'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$svg$Svg_Attributes$stroke('#000'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$svg$Svg_Attributes$strokeWidth('5.914'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$svg$Svg_Attributes$strokeLinecap('round'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$svg$Svg_Attributes$strokeLinejoin('bevel'),
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$svg$Svg$path,
+							{
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$d('M230.537 406.675a20.487 20.487 0 0 1 20.667-20.287 20.487 20.487 0 0 1 20.305 20.649 20.487 20.487 0 0 1-20.63 20.324 20.487 20.487 0 0 1-20.343-20.61'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$fill('red'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(
+											A2(_fbedussi$elm_boilerplate$Msgs$RegisterColor, direction, _fbedussi$elm_boilerplate$Models$Red)),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$svg$Svg$path,
+								{
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$d('M230.537 454.152a20.487 20.487 0 0 1 20.667-20.287 20.487 20.487 0 0 1 20.305 20.649 20.487 20.487 0 0 1-20.63 20.325 20.487 20.487 0 0 1-20.343-20.612'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$fill('#f60'),
+										_1: {ctor: '[]'}
+									}
+								},
+								{ctor: '[]'}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$svg$Svg$path,
+									{
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$d('M230.537 501.63a20.487 20.487 0 0 1 20.667-20.287 20.487 20.487 0 0 1 20.305 20.648 20.487 20.487 0 0 1-20.63 20.325 20.487 20.487 0 0 1-20.343-20.611'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$fill('green'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(
+													A2(_fbedussi$elm_boilerplate$Msgs$RegisterColor, direction, _fbedussi$elm_boilerplate$Models$Green)),
+												_1: {ctor: '[]'}
+											}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}),
+			_1: {ctor: '[]'}
+		});
 };
-var _knledg$touch_events$TouchEvents$onTouchMove = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'touchmove',
-		A2(_knledg$touch_events$TouchEvents$eventDecoder, msg, 'touches'));
-};
-var _knledg$touch_events$TouchEvents$onTouchEvent = F2(
-	function (eventType, msg) {
-		var _p0 = eventType;
+
+var _fbedussi$elm_boilerplate$View$extractDirectionData = F2(
+	function (model, direction) {
+		var _p0 = direction;
 		switch (_p0.ctor) {
-			case 'TouchStart':
-				return _knledg$touch_events$TouchEvents$onTouchStart(msg);
-			case 'TouchEnd':
-				return _knledg$touch_events$TouchEvents$onTouchEnd(msg);
+			case 'North':
+				return model.data.north;
+			case 'South':
+				return model.data.south;
+			case 'East':
+				return model.data.east;
 			default:
-				return _knledg$touch_events$TouchEvents$onTouchMove(msg);
+				return model.data.west;
 		}
 	});
-var _knledg$touch_events$TouchEvents$TouchMove = {ctor: 'TouchMove'};
-var _knledg$touch_events$TouchEvents$TouchEnd = {ctor: 'TouchEnd'};
-var _knledg$touch_events$TouchEvents$TouchStart = {ctor: 'TouchStart'};
-var _knledg$touch_events$TouchEvents$Down = {ctor: 'Down'};
-var _knledg$touch_events$TouchEvents$Up = {ctor: 'Up'};
-var _knledg$touch_events$TouchEvents$getDirectionY = F2(
-	function (start, end) {
-		return (_elm_lang$core$Native_Utils.cmp(start, end) > 0) ? _knledg$touch_events$TouchEvents$Up : _knledg$touch_events$TouchEvents$Down;
+var _fbedussi$elm_boilerplate$View$getPercentage = F3(
+	function (model, direction, color) {
+		var colors = A2(_fbedussi$elm_boilerplate$View$extractDirectionData, model, direction);
+		var colorsLenght = _elm_lang$core$List$length(colors);
+		var colorsFiltered = A2(
+			_elm_lang$core$List$filter,
+			function (item) {
+				return _elm_lang$core$Native_Utils.eq(item, color);
+			},
+			colors);
+		var colorsFilteredLength = _elm_lang$core$List$length(colorsFiltered);
+		var percentage = _elm_lang$core$Basics$round(
+			(_elm_lang$core$Basics$toFloat(colorsFilteredLength) / _elm_lang$core$Basics$toFloat(colorsLenght)) * 100);
+		return _elm_lang$core$Basics$toString(percentage);
 	});
-var _knledg$touch_events$TouchEvents$Right = {ctor: 'Right'};
-var _knledg$touch_events$TouchEvents$Left = {ctor: 'Left'};
-var _knledg$touch_events$TouchEvents$getDirectionX = F2(
-	function (start, end) {
-		return (_elm_lang$core$Native_Utils.cmp(start, end) > 0) ? _knledg$touch_events$TouchEvents$Left : _knledg$touch_events$TouchEvents$Right;
-	});
-
-var _fbedussi$elm_boilerplate$View$page1 = A2(
-	_elm_lang$html$Html$div,
-	{ctor: '[]'},
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html$text('page1'),
-		_1: {ctor: '[]'}
-	});
-var _fbedussi$elm_boilerplate$View$renderVal = function (val) {
-	var label = _elm_lang$core$Native_Utils.eq(val, true) ? 'green' : 'red';
+var _fbedussi$elm_boilerplate$View$getColorLabel = function (color) {
+	var _p1 = color;
+	if (_p1.ctor === 'Red') {
+		return 'red';
+	} else {
+		return 'green';
+	}
+};
+var _fbedussi$elm_boilerplate$View$renderColor = function (color) {
 	return A2(
 		_elm_lang$html$Html$span,
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text(label),
+			_0: _elm_lang$html$Html$text(
+				_fbedussi$elm_boilerplate$View$getColorLabel(color)),
 			_1: {ctor: '[]'}
 		});
 };
+var _fbedussi$elm_boilerplate$View$notFoundView = A2(
+	_elm_lang$html$Html$div,
+	{ctor: '[]'},
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html$text('Not found'),
+		_1: {ctor: '[]'}
+	});
+var _fbedussi$elm_boilerplate$View$onLinkClick = function (message) {
+	var options = {stopPropagation: false, preventDefault: true};
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'click',
+		options,
+		_elm_lang$core$Json_Decode$succeed(message));
+};
 var _fbedussi$elm_boilerplate$View$homePage = function (model) {
+	var historyPath = '/history';
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -10490,10 +10831,154 @@ var _fbedussi$elm_boilerplate$View$homePage = function (model) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('topContainer'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('dataContainer'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'red: ',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										A3(_fbedussi$elm_boilerplate$View$getPercentage, model, _fbedussi$elm_boilerplate$Models$North, _fbedussi$elm_boilerplate$Models$Red),
+										'%'))),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$North),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('dataContainer'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											'green: ',
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												A3(_fbedussi$elm_boilerplate$View$getPercentage, model, _fbedussi$elm_boilerplate$Models$North, _fbedussi$elm_boilerplate$Models$Green),
+												'%'))),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('middleContainer'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$West),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('compassContainer'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _fbedussi$elm_boilerplate$Graphics$compass(
+										{ctor: '_Tuple0'}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$East),
+								_1: {ctor: '[]'}
+							}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('bottomContainer'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$South),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$a,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('historyLink'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$href(historyPath),
+									_1: {
+										ctor: '::',
+										_0: _fbedussi$elm_boilerplate$View$onLinkClick(
+											_fbedussi$elm_boilerplate$Msgs$ChangeLocation(historyPath)),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('data history'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _fbedussi$elm_boilerplate$View$history = function (model) {
+	var homePath = '/';
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('history'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$class('north'),
 					_1: {ctor: '[]'}
 				},
-				A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$View$renderVal, model.data.north)),
+				A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$View$renderColor, model.data.north)),
 			_1: {
 				ctor: '::',
 				_0: A2(
@@ -10503,7 +10988,7 @@ var _fbedussi$elm_boilerplate$View$homePage = function (model) {
 						_0: _elm_lang$html$Html_Attributes$class('south'),
 						_1: {ctor: '[]'}
 					},
-					A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$View$renderVal, model.data.south)),
+					A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$View$renderColor, model.data.south)),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -10513,7 +10998,7 @@ var _fbedussi$elm_boilerplate$View$homePage = function (model) {
 							_0: _elm_lang$html$Html_Attributes$class('east'),
 							_1: {ctor: '[]'}
 						},
-						A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$View$renderVal, model.data.east)),
+						A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$View$renderColor, model.data.east)),
 					_1: {
 						ctor: '::',
 						_0: A2(
@@ -10523,49 +11008,47 @@ var _fbedussi$elm_boilerplate$View$homePage = function (model) {
 								_0: _elm_lang$html$Html_Attributes$class('west'),
 								_1: {ctor: '[]'}
 							},
-							A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$View$renderVal, model.data.west)),
-						_1: {ctor: '[]'}
+							A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$View$renderColor, model.data.west)),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$a,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('homeLink'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$href(homePath),
+										_1: {
+											ctor: '::',
+											_0: _fbedussi$elm_boilerplate$View$onLinkClick(
+												_fbedussi$elm_boilerplate$Msgs$ChangeLocation(homePath)),
+											_1: {ctor: '[]'}
+										}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('data history'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}
 		});
 };
-var _fbedussi$elm_boilerplate$View$notFoundView = A2(
-	_elm_lang$html$Html$div,
-	{ctor: '[]'},
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html$text('Not found'),
-		_1: {ctor: '[]'}
-	});
-var _fbedussi$elm_boilerplate$View$page = function (model) {
-	var _p0 = model.route;
-	switch (_p0.ctor) {
+var _fbedussi$elm_boilerplate$View$view = function (model) {
+	var _p2 = model.route;
+	switch (_p2.ctor) {
 		case 'Home':
 			return _fbedussi$elm_boilerplate$View$homePage(model);
-		case 'Page1':
-			return _fbedussi$elm_boilerplate$View$page1;
+		case 'History':
+			return _fbedussi$elm_boilerplate$View$history(model);
 		default:
 			return _fbedussi$elm_boilerplate$View$notFoundView;
 	}
-};
-var _fbedussi$elm_boilerplate$View$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _fbedussi$elm_boilerplate$View$page(model),
-			_1: {ctor: '[]'}
-		});
-};
-var _fbedussi$elm_boilerplate$View$onLinkClick = function (message) {
-	var options = {stopPropagation: false, preventDefault: true};
-	return A3(
-		_elm_lang$html$Html_Events$onWithOptions,
-		'click',
-		options,
-		_elm_lang$core$Json_Decode$succeed(message));
 };
 
 var _fbedussi$elm_boilerplate$App$main = A2(

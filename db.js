@@ -14251,7 +14251,7 @@ const dbInterface = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__package_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__package_json__);
 
 
-debugger;
+
 __WEBPACK_IMPORTED_MODULE_0_firebase__["initializeApp"](__WEBPACK_IMPORTED_MODULE_1__package_json__["config"].firebase);
 
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_firebase__);

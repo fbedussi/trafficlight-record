@@ -3,3 +3,44 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+.homePage {
+    padding: 5vw;
+    height: 100vh;
+}
+
+.topContainer,
+.bottomContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30vh;
+}
+
+.middleContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 30vh;    
+}
+
+.compassContainer {
+    padding: 5vw;
+    width: 50vw;
+}
+
+.trafficLight {
+    width: 16vw;
+}
+
+.compass {
+    width: 40vw;
+}
+
+.historyLink,
+.homeLink {
+    display: block;
+    width: 100%;
+    height: 10vh;
+    text-align: center;
+}
