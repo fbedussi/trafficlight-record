@@ -10366,70 +10366,63 @@ var _fbedussi$elm_boilerplate$Helpers$example = function (_p0) {
 	return true;
 };
 
-var _fbedussi$elm_boilerplate$Update$updateColorInModel = F3(
-	function (model, direction, color) {
-		var newData = model.data;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				data: function () {
-					var _p0 = direction;
-					switch (_p0.ctor) {
-						case 'North':
-							return _elm_lang$core$Native_Utils.update(
-								newData,
-								{
-									north: A2(
-										_elm_lang$core$List$append,
-										model.data.north,
-										{
-											ctor: '::',
-											_0: color,
-											_1: {ctor: '[]'}
-										})
-								});
-						case 'South':
-							return _elm_lang$core$Native_Utils.update(
-								newData,
-								{
-									south: A2(
-										_elm_lang$core$List$append,
-										model.data.south,
-										{
-											ctor: '::',
-											_0: color,
-											_1: {ctor: '[]'}
-										})
-								});
-						case 'East':
-							return _elm_lang$core$Native_Utils.update(
-								newData,
-								{
-									east: A2(
-										_elm_lang$core$List$append,
-										model.data.east,
-										{
-											ctor: '::',
-											_0: color,
-											_1: {ctor: '[]'}
-										})
-								});
-						default:
-							return _elm_lang$core$Native_Utils.update(
-								newData,
-								{
-									west: A2(
-										_elm_lang$core$List$append,
-										model.data.west,
-										{
-											ctor: '::',
-											_0: color,
-											_1: {ctor: '[]'}
-										})
-								});
-					}
-				}()
-			});
+var _fbedussi$elm_boilerplate$Update$updateData = F3(
+	function (data, direction, color) {
+		var _p0 = direction;
+		switch (_p0.ctor) {
+			case 'North':
+				return _elm_lang$core$Native_Utils.update(
+					data,
+					{
+						north: A2(
+							_elm_lang$core$List$append,
+							data.north,
+							{
+								ctor: '::',
+								_0: color,
+								_1: {ctor: '[]'}
+							})
+					});
+			case 'South':
+				return _elm_lang$core$Native_Utils.update(
+					data,
+					{
+						south: A2(
+							_elm_lang$core$List$append,
+							data.south,
+							{
+								ctor: '::',
+								_0: color,
+								_1: {ctor: '[]'}
+							})
+					});
+			case 'East':
+				return _elm_lang$core$Native_Utils.update(
+					data,
+					{
+						east: A2(
+							_elm_lang$core$List$append,
+							data.east,
+							{
+								ctor: '::',
+								_0: color,
+								_1: {ctor: '[]'}
+							})
+					});
+			default:
+				return _elm_lang$core$Native_Utils.update(
+					data,
+					{
+						west: A2(
+							_elm_lang$core$List$append,
+							data.west,
+							{
+								ctor: '::',
+								_0: color,
+								_1: {ctor: '[]'}
+							})
+					});
+		}
 	});
 var _fbedussi$elm_boilerplate$Update$update = F2(
 	function (msg, model) {
@@ -10461,10 +10454,44 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			default:
+				var _p3 = _p1._0;
+				var _p2 = _p1._1;
+				var createPayload = _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'storeName',
+							_1: _elm_lang$core$Json_Encode$string(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'data/',
+									_elm_lang$core$String$toLower(
+										_elm_lang$core$Basics$toString(_p3))))
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'content',
+								_1: _elm_lang$core$Json_Encode$string(
+									_elm_lang$core$String$toLower(
+										_elm_lang$core$Basics$toString(_p2)))
+							},
+							_1: {ctor: '[]'}
+						}
+					});
+				var updatedData = A3(_fbedussi$elm_boilerplate$Update$updateData, model.data, _p3, _p2);
 				return {
 					ctor: '_Tuple2',
-					_0: A3(_fbedussi$elm_boilerplate$Update$updateColorInModel, model, _p1._0, _p1._1),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{data: updatedData}),
+					_1: _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebase(
+						A2(
+							_fbedussi$elm_boilerplate$Models$FirebaseCmd,
+							'create',
+							A2(_elm_lang$core$Json_Encode$encode, 0, createPayload)))
 				};
 		}
 	});

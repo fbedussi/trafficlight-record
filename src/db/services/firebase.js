@@ -8,10 +8,11 @@ const openDb = (payload) => new Promise(({resolve, reject}) => {
   resolve(dbInterface);
 });
 
-const createInStore = ({storeName, content}) => db
+const createInStore = ({storeName = data, content}) => db
     //.ref(`users/${user.uid}/${storeName}/${content.id}`)
-    .ref(`${storeName}/${content.id}`)
-    .set(content)
+    //.ref(`${storeName}/${content.id}`)
+    .ref(storeName)
+    .push(content)
 ;
 
 const readInStore = ({storeName, contentId}) => db
