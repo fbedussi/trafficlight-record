@@ -4,13 +4,28 @@
     box-sizing: border-box;
 }
 
+body {
+    font-family: sans-serif;
+}
+
 .homePage {
     padding: 5vw;
     height: 100vh;
+    background-color: #aade87;
+    position: relative;
+}
+
+.redBar {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    background-color: #ff8080;
 }
 
 .topContainer,
 .bottomContainer {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,15 +33,31 @@
 }
 
 .middleContainer {
+    position: relative;    
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 30vh;    
+    height: 30vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;    
 }
 
 .compassContainer {
     padding: 5vw;
     width: 50vw;
+    height: 100%;
+    position: relative;
+}
+
+.directionIndicator {
+    width: 10%;
+    padding-top: 10%;
+    border: solid 2px black;
+    position: absolute;
+    top: 45%;
+    left: 45%;
+    border-radius: 50%;
 }
 
 .trafficLight {
@@ -35,12 +66,26 @@
 
 .compass {
     width: 40vw;
+    height: 100%;
+    position: relative;
+    left: -3px;
+    top: -3px;
 }
 
-.historyLink,
-.homeLink {
+.btn {
+    background-color: teal;
+    border-radius: 3px;
+    padding: 0.5em 1em;
+    text-transform: uppercase;
+    color: white;
+    text-decoration: none;
+}
+
+.footer {
     display: block;
     width: 100%;
     height: 10vh;
     text-align: center;
+    text-decoration: none;
+    position: relative;
 }

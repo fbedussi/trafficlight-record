@@ -10331,26 +10331,28 @@ var _fbedussi$elm_boilerplate$Subscriptions$colorDecoder = A2(
 		}
 	},
 	_elm_lang$core$Json_Decode$string);
-var _fbedussi$elm_boilerplate$Subscriptions$decodeData = _elm_lang$core$Json_Decode$decodeValue(
-	A5(
-		_elm_lang$core$Json_Decode$map4,
-		_fbedussi$elm_boilerplate$Models$Data,
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'north',
-			_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)),
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'south',
-			_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)),
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'east',
-			_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)),
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'west',
-			_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder))));
+var _fbedussi$elm_boilerplate$Subscriptions$dataDecoder = A5(
+	_elm_lang$core$Json_Decode$map4,
+	_fbedussi$elm_boilerplate$Models$Data,
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'north',
+		_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'south',
+		_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'east',
+		_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'west',
+		_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)));
+var _fbedussi$elm_boilerplate$Subscriptions$decodeData = function (value) {
+	return A2(_elm_lang$core$Json_Decode$decodeValue, _fbedussi$elm_boilerplate$Subscriptions$dataDecoder, value);
+};
 var _fbedussi$elm_boilerplate$Subscriptions$subscriptions = function (model) {
 	return _fbedussi$elm_boilerplate$Firebase$listenToFirebaseResponse(
 		function (_p1) {
@@ -10578,38 +10580,7 @@ var _fbedussi$elm_boilerplate$Graphics$compass = function (_p0) {
 									_1: {ctor: '[]'}
 								},
 								{ctor: '[]'}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$svg$Svg$path,
-									{
-										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$d('M56.358 150.974a50.999 50.999 0 0 1 50.81-50.5 50.999 50.999 0 0 1 51.178 50.127 50.999 50.999 0 0 1-49.436 51.846 50.999 50.999 0 0 1-52.505-48.736'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$fill('none'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$svg$Svg_Attributes$stroke('#000'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$svg$Svg_Attributes$strokeWidth('4.039'),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$svg$Svg_Attributes$strokeLinecap('round'),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$svg$Svg_Attributes$strokeLinejoin('bevel'),
-															_1: {ctor: '[]'}
-														}
-													}
-												}
-											}
-										}
-									},
-									{ctor: '[]'}),
-								_1: {ctor: '[]'}
-							}
+							_1: {ctor: '[]'}
 						}
 					}
 				}
@@ -10752,6 +10723,43 @@ var _fbedussi$elm_boilerplate$Graphics$trafficLight = function (direction) {
 		});
 };
 
+var _fbedussi$elm_boilerplate$View$getTotalRedPercentage = function (model) {
+	var totalValues = A2(
+		_elm_lang$core$List$append,
+		model.data.west,
+		A2(
+			_elm_lang$core$List$append,
+			model.data.east,
+			A2(_elm_lang$core$List$append, model.data.south, model.data.north)));
+	var numberOfValues = _elm_lang$core$List$length(totalValues);
+	var reds = A2(
+		_elm_lang$core$List$filter,
+		function (val) {
+			return _elm_lang$core$Native_Utils.eq(val, _fbedussi$elm_boilerplate$Models$Red);
+		},
+		totalValues);
+	var numberOfReds = _elm_lang$core$List$length(reds);
+	return _elm_lang$core$Basics$round(
+		(_elm_lang$core$Basics$toFloat(numberOfReds) / _elm_lang$core$Basics$toFloat(numberOfValues)) * 100);
+};
+var _fbedussi$elm_boilerplate$View$getDirectionIndicatorOffest = function (data) {
+	var westLength = _elm_lang$core$Basics$toFloat(
+		_elm_lang$core$List$length(data.west));
+	var eastLength = _elm_lang$core$Basics$toFloat(
+		_elm_lang$core$List$length(data.east));
+	var southLength = _elm_lang$core$Basics$toFloat(
+		_elm_lang$core$List$length(data.south));
+	var northLength = _elm_lang$core$Basics$toFloat(
+		_elm_lang$core$List$length(data.north));
+	var totalLength = ((northLength + southLength) + eastLength) + westLength;
+	var xOffset = ((eastLength - westLength) / totalLength) * 100;
+	var yOffset = ((southLength - northLength) / totalLength) * 100;
+	return {
+		ctor: '_Tuple2',
+		_0: _elm_lang$core$Basics$round(xOffset),
+		_1: _elm_lang$core$Basics$round(yOffset)
+	};
+};
 var _fbedussi$elm_boilerplate$View$extractDirectionData = F2(
 	function (model, direction) {
 		var _p0 = direction;
@@ -10831,91 +10839,40 @@ var _fbedussi$elm_boilerplate$View$homePage = function (model) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('topContainer'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('dataContainer'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									'red: ',
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										A3(_fbedussi$elm_boilerplate$View$getPercentage, model, _fbedussi$elm_boilerplate$Models$North, _fbedussi$elm_boilerplate$Models$Red),
-										'%'))),
-							_1: {ctor: '[]'}
-						}),
+					_0: _elm_lang$html$Html_Attributes$class('redBar'),
 					_1: {
 						ctor: '::',
-						_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$North),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('dataContainer'),
-									_1: {ctor: '[]'}
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'height',
+									_1: A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(
+											_fbedussi$elm_boilerplate$View$getTotalRedPercentage(model)),
+										'%')
 								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										A2(
-											_elm_lang$core$Basics_ops['++'],
-											'green: ',
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												A3(_fbedussi$elm_boilerplate$View$getPercentage, model, _fbedussi$elm_boilerplate$Models$North, _fbedussi$elm_boilerplate$Models$Green),
-												'%'))),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
 					}
-				}),
+				},
+				{ctor: '[]'}),
 			_1: {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('middleContainer'),
+						_0: _elm_lang$html$Html_Attributes$class('topContainer'),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$West),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('compassContainer'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _fbedussi$elm_boilerplate$Graphics$compass(
-										{ctor: '_Tuple0'}),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$East),
-								_1: {ctor: '[]'}
-							}
-						}
+						_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$North),
+						_1: {ctor: '[]'}
 					}),
 				_1: {
 					ctor: '::',
@@ -10923,38 +10880,124 @@ var _fbedussi$elm_boilerplate$View$homePage = function (model) {
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('bottomContainer'),
+							_0: _elm_lang$html$Html_Attributes$class('middleContainer'),
 							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
-							_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$South),
-							_1: {ctor: '[]'}
+							_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$West),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('compassContainer'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _fbedussi$elm_boilerplate$Graphics$compass(
+											{ctor: '_Tuple0'}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$div,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('directionIndicator'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$style(
+															{
+																ctor: '::',
+																_0: {
+																	ctor: '_Tuple2',
+																	_0: 'transform',
+																	_1: A2(
+																		_elm_lang$core$Basics_ops['++'],
+																		'translate(',
+																		A2(
+																			_elm_lang$core$Basics_ops['++'],
+																			_elm_lang$core$Basics$toString(
+																				_elm_lang$core$Tuple$first(
+																					_fbedussi$elm_boilerplate$View$getDirectionIndicatorOffest(model.data))),
+																			A2(
+																				_elm_lang$core$Basics_ops['++'],
+																				'%, ',
+																				A2(
+																					_elm_lang$core$Basics_ops['++'],
+																					_elm_lang$core$Basics$toString(
+																						_elm_lang$core$Tuple$second(
+																							_fbedussi$elm_boilerplate$View$getDirectionIndicatorOffest(model.data))),
+																					'%)'))))
+																},
+																_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}
+												},
+												{ctor: '[]'}),
+											_1: {ctor: '[]'}
+										}
+									}),
+								_1: {
+									ctor: '::',
+									_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$East),
+									_1: {ctor: '[]'}
+								}
+							}
 						}),
 					_1: {
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$a,
+							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('historyLink'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$href(historyPath),
-									_1: {
-										ctor: '::',
-										_0: _fbedussi$elm_boilerplate$View$onLinkClick(
-											_fbedussi$elm_boilerplate$Msgs$ChangeLocation(historyPath)),
-										_1: {ctor: '[]'}
-									}
-								}
+								_0: _elm_lang$html$Html_Attributes$class('bottomContainer'),
+								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('data history'),
+								_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$South),
 								_1: {ctor: '[]'}
 							}),
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('footer'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$a,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('historyLink btn'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$href(historyPath),
+												_1: {
+													ctor: '::',
+													_0: _fbedussi$elm_boilerplate$View$onLinkClick(
+														_fbedussi$elm_boilerplate$Msgs$ChangeLocation(historyPath)),
+													_1: {ctor: '[]'}
+												}
+											}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('view data'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}
@@ -11012,24 +11055,35 @@ var _fbedussi$elm_boilerplate$View$history = function (model) {
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$a,
+								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('homeLink'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$href(homePath),
-										_1: {
-											ctor: '::',
-											_0: _fbedussi$elm_boilerplate$View$onLinkClick(
-												_fbedussi$elm_boilerplate$Msgs$ChangeLocation(homePath)),
-											_1: {ctor: '[]'}
-										}
-									}
+									_0: _elm_lang$html$Html_Attributes$class('footer'),
+									_1: {ctor: '[]'}
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('data history'),
+									_0: A2(
+										_elm_lang$html$Html$a,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('homeLink btn'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$href(homePath),
+												_1: {
+													ctor: '::',
+													_0: _fbedussi$elm_boilerplate$View$onLinkClick(
+														_fbedussi$elm_boilerplate$Msgs$ChangeLocation(homePath)),
+													_1: {ctor: '[]'}
+												}
+											}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('back'),
+											_1: {ctor: '[]'}
+										}),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}

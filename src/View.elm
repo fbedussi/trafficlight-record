@@ -94,6 +94,58 @@ getPercentage model direction color =
     toString percentage
 
 
+getDirectionIndicatorOffest : Data -> ( Int, Int )
+getDirectionIndicatorOffest data =
+    let
+        northLength =
+            List.length data.north
+                |> toFloat
+
+        southLength =
+            List.length data.south
+                |> toFloat
+
+        eastLength =
+            List.length data.east
+                |> toFloat
+
+        westLength =
+            List.length data.west
+                |> toFloat
+
+        totalLength =
+            northLength + southLength + eastLength + westLength
+
+        xOffset =
+            (eastLength - westLength) / totalLength * 100
+
+        yOffset =
+            (southLength - northLength) / totalLength * 100
+    in
+    ( round xOffset, round yOffset )
+
+
+getTotalRedPercentage : Model -> Int
+getTotalRedPercentage model =
+    let
+        totalValues =
+            model.data.north
+                |> List.append model.data.south
+                |> List.append model.data.east
+                |> List.append model.data.west
+
+        numberOfValues =
+            List.length totalValues
+
+        reds =
+            List.filter (\val -> val == Red) totalValues
+
+        numberOfReds =
+            List.length reds
+    in
+    round (toFloat numberOfReds / toFloat numberOfValues * 100)
+
+
 homePage : Model -> Html Msg
 homePage model =
     let
@@ -103,32 +155,39 @@ homePage model =
     div
         [ class "homePage" ]
         [ div
+            [ class "redBar"
+            , style [ ( "height", (getTotalRedPercentage model |> toString) ++ "%" ) ]
+            ]
+            []
+        , div
             [ class "topContainer" ]
-            [ div
-                [ class "dataContainer" ]
-                [ text ("red: " ++ getPercentage model North Red ++ "%") ]
-            , trafficLight North
-            , div
-                [ class "dataContainer" ]
-                [ text ("green: " ++ getPercentage model North Green ++ "%") ]
+            [ trafficLight North
             ]
         , div
             [ class "middleContainer" ]
             [ trafficLight West
             , div
                 [ class "compassContainer" ]
-                [ compass () ]
+                [ compass ()
+                , div
+                    [ class "directionIndicator"
+                    , style [ ( "transform", "translate(" ++ (getDirectionIndicatorOffest model.data |> Tuple.first |> toString) ++ "%, " ++ toString (Tuple.second (getDirectionIndicatorOffest model.data)) ++ "%)" ) ]
+                    ]
+                    []
+                ]
             , trafficLight East
             ]
         , div
             [ class "bottomContainer" ]
             [ trafficLight South ]
-        , a
-            [ class "historyLink"
-            , href historyPath
-            , onLinkClick (ChangeLocation historyPath)
+        , div [ class "footer" ]
+            [ a
+                [ class "historyLink btn"
+                , href historyPath
+                , onLinkClick (ChangeLocation historyPath)
+                ]
+                [ text "view data" ]
             ]
-            [ text "data history" ]
         ]
 
 
@@ -160,10 +219,12 @@ history model =
                 renderColor
                 model.data.west
             )
-        , a
-            [ class "homeLink"
-            , href homePath
-            , onLinkClick (ChangeLocation homePath)
+        , div [ class "footer" ]
+            [ a
+                [ class "homeLink btn"
+                , href homePath
+                , onLinkClick (ChangeLocation homePath)
+                ]
+                [ text "back" ]
             ]
-            [ text "data history" ]
         ]

@@ -1,8 +1,9 @@
 module Subscriptions exposing (..)
 
+--import Json.Encode
+
 import Firebase exposing (listenToFirebaseResponse)
 import Json.Decode exposing (..)
-import Json.Encode
 import Models exposing (..)
 import Msgs exposing (Msg)
 
@@ -22,20 +23,24 @@ subscriptions model =
 --         |> required "west" Json.Decode.list colorDecoder
 
 
-decodeData : Json.Decode.Value -> Result String Data
-decodeData =
-    Json.Decode.decodeValue <|
-        Json.Decode.map4 Data
-            (field "north" (Json.Decode.list colorDecoder))
-            (field "south" (Json.Decode.list colorDecoder))
-            (field "east" (Json.Decode.list colorDecoder))
-            (field "west" (Json.Decode.list colorDecoder))
+decodeData : Value -> Result String Data
+decodeData value =
+    decodeValue dataDecoder value
+
+
+dataDecoder : Decoder Data
+dataDecoder =
+    map4 Data
+        (field "north" (list colorDecoder))
+        (field "south" (list colorDecoder))
+        (field "east" (list colorDecoder))
+        (field "west" (list colorDecoder))
 
 
 colorDecoder : Json.Decode.Decoder Color
 colorDecoder =
-    Json.Decode.string
-        |> Json.Decode.andThen
+    string
+        |> andThen
             (\str ->
                 case str of
                     "red" ->
