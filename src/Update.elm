@@ -8,6 +8,8 @@ import Models exposing (..)
 import Msgs exposing (..)
 import Navigation exposing (newUrl)
 import Routing exposing (parseLocation)
+import Task
+import Time exposing (Time)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -30,34 +32,50 @@ update msg model =
         NewData (Ok data) ->
             ( { model | data = data }, Cmd.none )
 
-        NewData (Err _) ->
+        NewData (Err error) ->
+            let
+                log =
+                    Debug.log "newData error" error
+            in
             ( model, Cmd.none )
 
-        RegisterColor direction color ->
+        HandleClick direction color ->
+            ( model, Task.perform (RegisterColor direction color) Time.now )
+
+        RegisterColor direction color time ->
             let
+                newPassageData =
+                    PassageData time color
+
+                encodedNewPassageData =
+                    object
+                        [ ( "time", float time )
+                        , ( "color", color |> toString |> String.toLower |> string )
+                        ]
+
                 updatedData =
-                    updateData model.data direction color
+                    updateData model.data direction newPassageData
 
                 createPayload =
                     object
                         [ ( "storeName", string ("data/" ++ (direction |> toString |> String.toLower)) )
-                        , ( "content", string (color |> toString |> String.toLower) )
+                        , ( "content", string (encode 0 encodedNewPassageData) )
                         ]
             in
             ( { model | data = updatedData }, sendCmdToFirebase (FirebaseCmd "create" (encode 0 createPayload)) )
 
 
-updateData : Data -> Direction -> Color -> Data
-updateData data direction color =
+updateData : Data -> Direction -> PassageData -> Data
+updateData data direction newPassageData =
     case direction of
         North ->
-            { data | north = List.append data.north [ color ] }
+            { data | north = List.append data.north [ newPassageData ] }
 
         South ->
-            { data | south = List.append data.south [ color ] }
+            { data | south = List.append data.south [ newPassageData ] }
 
         East ->
-            { data | east = List.append data.east [ color ] }
+            { data | east = List.append data.east [ newPassageData ] }
 
         West ->
-            { data | west = List.append data.west [ color ] }
+            { data | west = List.append data.west [ newPassageData ] }

@@ -1,5 +1,7 @@
 module Models exposing (..)
 
+import Time exposing (Time)
+
 
 type alias Model =
     { route : Route
@@ -25,12 +27,22 @@ type Color
     | Green
 
 
-type alias Data =
-    { north : List Color
-    , south : List Color
-    , east : List Color
-    , west : List Color
+type alias PassageData =
+    { time : Time
+    , color : Color
     }
+
+
+type alias Data =
+    { north : List PassageData
+    , south : List PassageData
+    , east : List PassageData
+    , west : List PassageData
+    }
+
+
+type alias JsonPassageData =
+    ( String, PassageData )
 
 
 type alias JsonString =

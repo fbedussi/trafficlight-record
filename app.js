@@ -10232,6 +10232,10 @@ var _fbedussi$elm_boilerplate$Models$resetModel = function (route) {
 			west: {ctor: '[]'}
 		});
 };
+var _fbedussi$elm_boilerplate$Models$PassageData = F2(
+	function (a, b) {
+		return {time: a, color: b};
+	});
 var _fbedussi$elm_boilerplate$Models$Data = F4(
 	function (a, b, c, d) {
 		return {north: a, south: b, east: c, west: d};
@@ -10257,9 +10261,13 @@ var _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebase = _elm_lang$core$Native
 	});
 var _fbedussi$elm_boilerplate$Firebase$listenToFirebaseResponse = _elm_lang$core$Native_Platform.incomingPort('listenToFirebaseResponse', _elm_lang$core$Json_Decode$value);
 
-var _fbedussi$elm_boilerplate$Msgs$RegisterColor = F2(
+var _fbedussi$elm_boilerplate$Msgs$RegisterColor = F3(
+	function (a, b, c) {
+		return {ctor: 'RegisterColor', _0: a, _1: b, _2: c};
+	});
+var _fbedussi$elm_boilerplate$Msgs$HandleClick = F2(
 	function (a, b) {
-		return {ctor: 'RegisterColor', _0: a, _1: b};
+		return {ctor: 'HandleClick', _0: a, _1: b};
 	});
 var _fbedussi$elm_boilerplate$Msgs$NewData = function (a) {
 	return {ctor: 'NewData', _0: a};
@@ -10331,25 +10339,22 @@ var _fbedussi$elm_boilerplate$Subscriptions$colorDecoder = A2(
 		}
 	},
 	_elm_lang$core$Json_Decode$string);
+var _fbedussi$elm_boilerplate$Subscriptions$passageDataDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_fbedussi$elm_boilerplate$Models$PassageData,
+	A2(_elm_lang$core$Json_Decode$field, 'time', _elm_lang$core$Json_Decode$float),
+	A2(_elm_lang$core$Json_Decode$field, 'color', _fbedussi$elm_boilerplate$Subscriptions$colorDecoder));
+var _fbedussi$elm_boilerplate$Subscriptions$decodeDirection = A2(
+	_elm_lang$core$Json_Decode$map,
+	_elm_lang$core$List$map(_elm_lang$core$Tuple$second),
+	_elm_lang$core$Json_Decode$keyValuePairs(_fbedussi$elm_boilerplate$Subscriptions$passageDataDecoder));
 var _fbedussi$elm_boilerplate$Subscriptions$dataDecoder = A5(
 	_elm_lang$core$Json_Decode$map4,
 	_fbedussi$elm_boilerplate$Models$Data,
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'north',
-		_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)),
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'south',
-		_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)),
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'east',
-		_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)),
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'west',
-		_elm_lang$core$Json_Decode$list(_fbedussi$elm_boilerplate$Subscriptions$colorDecoder)));
+	A2(_elm_lang$core$Json_Decode$field, 'north', _fbedussi$elm_boilerplate$Subscriptions$decodeDirection),
+	A2(_elm_lang$core$Json_Decode$field, 'south', _fbedussi$elm_boilerplate$Subscriptions$decodeDirection),
+	A2(_elm_lang$core$Json_Decode$field, 'east', _fbedussi$elm_boilerplate$Subscriptions$decodeDirection),
+	A2(_elm_lang$core$Json_Decode$field, 'west', _fbedussi$elm_boilerplate$Subscriptions$decodeDirection));
 var _fbedussi$elm_boilerplate$Subscriptions$decodeData = function (value) {
 	return A2(_elm_lang$core$Json_Decode$decodeValue, _fbedussi$elm_boilerplate$Subscriptions$dataDecoder, value);
 };
@@ -10361,13 +10366,17 @@ var _fbedussi$elm_boilerplate$Subscriptions$subscriptions = function (model) {
 		});
 };
 
-var _fbedussi$elm_boilerplate$Helpers$example = function (_p0) {
-	var _p1 = _p0;
-	return true;
+var _fbedussi$elm_boilerplate$Helpers$onLinkClick = function (message) {
+	var options = {stopPropagation: false, preventDefault: true};
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'click',
+		options,
+		_elm_lang$core$Json_Decode$succeed(message));
 };
 
 var _fbedussi$elm_boilerplate$Update$updateData = F3(
-	function (data, direction, color) {
+	function (data, direction, newPassageData) {
 		var _p0 = direction;
 		switch (_p0.ctor) {
 			case 'North':
@@ -10379,7 +10388,7 @@ var _fbedussi$elm_boilerplate$Update$updateData = F3(
 							data.north,
 							{
 								ctor: '::',
-								_0: color,
+								_0: newPassageData,
 								_1: {ctor: '[]'}
 							})
 					});
@@ -10392,7 +10401,7 @@ var _fbedussi$elm_boilerplate$Update$updateData = F3(
 							data.south,
 							{
 								ctor: '::',
-								_0: color,
+								_0: newPassageData,
 								_1: {ctor: '[]'}
 							})
 					});
@@ -10405,7 +10414,7 @@ var _fbedussi$elm_boilerplate$Update$updateData = F3(
 							data.east,
 							{
 								ctor: '::',
-								_0: color,
+								_0: newPassageData,
 								_1: {ctor: '[]'}
 							})
 					});
@@ -10418,7 +10427,7 @@ var _fbedussi$elm_boilerplate$Update$updateData = F3(
 							data.west,
 							{
 								ctor: '::',
-								_0: color,
+								_0: newPassageData,
 								_1: {ctor: '[]'}
 							})
 					});
@@ -10451,11 +10460,42 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
+					var log = A2(_elm_lang$core$Debug$log, 'newData error', _p1._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
+			case 'HandleClick':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A2(
+						_elm_lang$core$Task$perform,
+						A2(_fbedussi$elm_boilerplate$Msgs$RegisterColor, _p1._0, _p1._1),
+						_elm_lang$core$Time$now)
+				};
 			default:
+				var _p4 = _p1._2;
 				var _p3 = _p1._0;
 				var _p2 = _p1._1;
+				var encodedNewPassageData = _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'time',
+							_1: _elm_lang$core$Json_Encode$float(_p4)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'color',
+								_1: _elm_lang$core$Json_Encode$string(
+									_elm_lang$core$String$toLower(
+										_elm_lang$core$Basics$toString(_p2)))
+							},
+							_1: {ctor: '[]'}
+						}
+					});
 				var createPayload = _elm_lang$core$Json_Encode$object(
 					{
 						ctor: '::',
@@ -10475,13 +10515,13 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 								ctor: '_Tuple2',
 								_0: 'content',
 								_1: _elm_lang$core$Json_Encode$string(
-									_elm_lang$core$String$toLower(
-										_elm_lang$core$Basics$toString(_p2)))
+									A2(_elm_lang$core$Json_Encode$encode, 0, encodedNewPassageData))
 							},
 							_1: {ctor: '[]'}
 						}
 					});
-				var updatedData = A3(_fbedussi$elm_boilerplate$Update$updateData, model.data, _p3, _p2);
+				var newPassageData = A2(_fbedussi$elm_boilerplate$Models$PassageData, _p4, _p2);
+				var updatedData = A3(_fbedussi$elm_boilerplate$Update$updateData, model.data, _p3, newPassageData);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -10702,7 +10742,7 @@ var _fbedussi$elm_boilerplate$Graphics$trafficLight = function (direction) {
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Events$onClick(
-											A2(_fbedussi$elm_boilerplate$Msgs$RegisterColor, direction, _fbedussi$elm_boilerplate$Models$Red)),
+											A2(_fbedussi$elm_boilerplate$Msgs$HandleClick, direction, _fbedussi$elm_boilerplate$Models$Red)),
 										_1: {ctor: '[]'}
 									}
 								}
@@ -10735,7 +10775,7 @@ var _fbedussi$elm_boilerplate$Graphics$trafficLight = function (direction) {
 											_1: {
 												ctor: '::',
 												_0: _elm_lang$html$Html_Events$onClick(
-													A2(_fbedussi$elm_boilerplate$Msgs$RegisterColor, direction, _fbedussi$elm_boilerplate$Models$Green)),
+													A2(_fbedussi$elm_boilerplate$Msgs$HandleClick, direction, _fbedussi$elm_boilerplate$Models$Green)),
 												_1: {ctor: '[]'}
 											}
 										}
@@ -10750,7 +10790,7 @@ var _fbedussi$elm_boilerplate$Graphics$trafficLight = function (direction) {
 		});
 };
 
-var _fbedussi$elm_boilerplate$View$getTotalRedPercentage = function (model) {
+var _fbedussi$elm_boilerplate$HomePage$getTotalRedPercentage = function (model) {
 	var totalValues = A2(
 		_elm_lang$core$List$append,
 		model.data.west,
@@ -10762,14 +10802,14 @@ var _fbedussi$elm_boilerplate$View$getTotalRedPercentage = function (model) {
 	var reds = A2(
 		_elm_lang$core$List$filter,
 		function (val) {
-			return _elm_lang$core$Native_Utils.eq(val, _fbedussi$elm_boilerplate$Models$Red);
+			return _elm_lang$core$Native_Utils.eq(val.color, _fbedussi$elm_boilerplate$Models$Red);
 		},
 		totalValues);
 	var numberOfReds = _elm_lang$core$List$length(reds);
 	return _elm_lang$core$Basics$round(
 		(_elm_lang$core$Basics$toFloat(numberOfReds) / _elm_lang$core$Basics$toFloat(numberOfValues)) * 100);
 };
-var _fbedussi$elm_boilerplate$View$getDirectionIndicatorOffest = function (data) {
+var _fbedussi$elm_boilerplate$HomePage$getDirectionIndicatorOffest = function (data) {
 	var westLength = _elm_lang$core$Basics$toFloat(
 		_elm_lang$core$List$length(data.west));
 	var eastLength = _elm_lang$core$Basics$toFloat(
@@ -10787,71 +10827,7 @@ var _fbedussi$elm_boilerplate$View$getDirectionIndicatorOffest = function (data)
 		_1: _elm_lang$core$Basics$round(yOffset)
 	};
 };
-var _fbedussi$elm_boilerplate$View$extractDirectionData = F2(
-	function (model, direction) {
-		var _p0 = direction;
-		switch (_p0.ctor) {
-			case 'North':
-				return model.data.north;
-			case 'South':
-				return model.data.south;
-			case 'East':
-				return model.data.east;
-			default:
-				return model.data.west;
-		}
-	});
-var _fbedussi$elm_boilerplate$View$getPercentage = F3(
-	function (model, direction, color) {
-		var colors = A2(_fbedussi$elm_boilerplate$View$extractDirectionData, model, direction);
-		var colorsLenght = _elm_lang$core$List$length(colors);
-		var colorsFiltered = A2(
-			_elm_lang$core$List$filter,
-			function (item) {
-				return _elm_lang$core$Native_Utils.eq(item, color);
-			},
-			colors);
-		var colorsFilteredLength = _elm_lang$core$List$length(colorsFiltered);
-		var percentage = _elm_lang$core$Basics$round(
-			(_elm_lang$core$Basics$toFloat(colorsFilteredLength) / _elm_lang$core$Basics$toFloat(colorsLenght)) * 100);
-		return _elm_lang$core$Basics$toString(percentage);
-	});
-var _fbedussi$elm_boilerplate$View$getColorLabel = function (color) {
-	var _p1 = color;
-	if (_p1.ctor === 'Red') {
-		return 'red';
-	} else {
-		return 'green';
-	}
-};
-var _fbedussi$elm_boilerplate$View$renderColor = function (color) {
-	return A2(
-		_elm_lang$html$Html$span,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(
-				_fbedussi$elm_boilerplate$View$getColorLabel(color)),
-			_1: {ctor: '[]'}
-		});
-};
-var _fbedussi$elm_boilerplate$View$notFoundView = A2(
-	_elm_lang$html$Html$div,
-	{ctor: '[]'},
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html$text('Not found'),
-		_1: {ctor: '[]'}
-	});
-var _fbedussi$elm_boilerplate$View$onLinkClick = function (message) {
-	var options = {stopPropagation: false, preventDefault: true};
-	return A3(
-		_elm_lang$html$Html_Events$onWithOptions,
-		'click',
-		options,
-		_elm_lang$core$Json_Decode$succeed(message));
-};
-var _fbedussi$elm_boilerplate$View$homePage = function (model) {
+var _fbedussi$elm_boilerplate$HomePage$homePage = function (model) {
 	var historyPath = '/history';
 	return A2(
 		_elm_lang$html$Html$div,
@@ -10866,127 +10842,48 @@ var _fbedussi$elm_boilerplate$View$homePage = function (model) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('redBar'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$style(
-							{
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'height',
-									_1: A2(
-										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(
-											_fbedussi$elm_boilerplate$View$getTotalRedPercentage(model)),
-										'%')
-								},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
+					_0: _elm_lang$html$Html_Attributes$class('trafficLightsWrapper'),
+					_1: {ctor: '[]'}
 				},
-				{ctor: '[]'}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('topContainer'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$North),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
+				{
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('middleContainer'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$West),
+							_0: _elm_lang$html$Html_Attributes$class('redBar'),
 							_1: {
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$div,
+								_0: _elm_lang$html$Html_Attributes$style(
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('compassContainer'),
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'height',
+											_1: A2(
+												_elm_lang$core$Basics_ops['++'],
+												_elm_lang$core$Basics$toString(
+													_fbedussi$elm_boilerplate$HomePage$getTotalRedPercentage(model)),
+												'%')
+										},
 										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: _fbedussi$elm_boilerplate$Graphics$compass(
-											{ctor: '_Tuple0'}),
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$div,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('directionIndicator'),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$style(
-															{
-																ctor: '::',
-																_0: {
-																	ctor: '_Tuple2',
-																	_0: 'transform',
-																	_1: A2(
-																		_elm_lang$core$Basics_ops['++'],
-																		'translate(',
-																		A2(
-																			_elm_lang$core$Basics_ops['++'],
-																			_elm_lang$core$Basics$toString(
-																				_elm_lang$core$Tuple$first(
-																					_fbedussi$elm_boilerplate$View$getDirectionIndicatorOffest(model.data))),
-																			A2(
-																				_elm_lang$core$Basics_ops['++'],
-																				'%, ',
-																				A2(
-																					_elm_lang$core$Basics_ops['++'],
-																					_elm_lang$core$Basics$toString(
-																						_elm_lang$core$Tuple$second(
-																							_fbedussi$elm_boilerplate$View$getDirectionIndicatorOffest(model.data))),
-																					'%)'))))
-																},
-																_1: {ctor: '[]'}
-															}),
-														_1: {ctor: '[]'}
-													}
-												},
-												{ctor: '[]'}),
-											_1: {ctor: '[]'}
-										}
 									}),
-								_1: {
-									ctor: '::',
-									_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$East),
-									_1: {ctor: '[]'}
-								}
+								_1: {ctor: '[]'}
 							}
-						}),
+						},
+						{ctor: '[]'}),
 					_1: {
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('bottomContainer'),
+								_0: _elm_lang$html$Html_Attributes$class('topContainer'),
 								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
-								_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$South),
+								_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$North),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -10995,42 +10892,152 @@ var _fbedussi$elm_boilerplate$View$homePage = function (model) {
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('footer'),
+									_0: _elm_lang$html$Html_Attributes$class('middleContainer'),
 									_1: {ctor: '[]'}
 								},
 								{
 									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$a,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('historyLink btn'),
-											_1: {
+									_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$West),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$href(historyPath),
+												_0: _elm_lang$html$Html_Attributes$class('compassContainer'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _fbedussi$elm_boilerplate$Graphics$compass(
+													{ctor: '_Tuple0'}),
 												_1: {
 													ctor: '::',
-													_0: _fbedussi$elm_boilerplate$View$onLinkClick(
-														_fbedussi$elm_boilerplate$Msgs$ChangeLocation(historyPath)),
+													_0: A2(
+														_elm_lang$html$Html$div,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('directionIndicator'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$style(
+																	{
+																		ctor: '::',
+																		_0: {
+																			ctor: '_Tuple2',
+																			_0: 'transform',
+																			_1: A2(
+																				_elm_lang$core$Basics_ops['++'],
+																				'translate(',
+																				A2(
+																					_elm_lang$core$Basics_ops['++'],
+																					_elm_lang$core$Basics$toString(
+																						_elm_lang$core$Tuple$first(
+																							_fbedussi$elm_boilerplate$HomePage$getDirectionIndicatorOffest(model.data))),
+																					A2(
+																						_elm_lang$core$Basics_ops['++'],
+																						'%, ',
+																						A2(
+																							_elm_lang$core$Basics_ops['++'],
+																							_elm_lang$core$Basics$toString(
+																								_elm_lang$core$Tuple$second(
+																									_fbedussi$elm_boilerplate$HomePage$getDirectionIndicatorOffest(model.data))),
+																							'%)'))))
+																		},
+																		_1: {ctor: '[]'}
+																	}),
+																_1: {ctor: '[]'}
+															}
+														},
+														{ctor: '[]'}),
 													_1: {ctor: '[]'}
 												}
-											}
-										},
-										{
+											}),
+										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('view data'),
+											_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$East),
 											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
+										}
+									}
 								}),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('bottomContainer'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _fbedussi$elm_boilerplate$Graphics$trafficLight(_fbedussi$elm_boilerplate$Models$South),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
-				}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('footer'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$a,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('historyLink btn'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$href(historyPath),
+									_1: {
+										ctor: '::',
+										_0: _fbedussi$elm_boilerplate$Helpers$onLinkClick(
+											_fbedussi$elm_boilerplate$Msgs$ChangeLocation(historyPath)),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('view data'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
 			}
 		});
 };
-var _fbedussi$elm_boilerplate$View$history = function (model) {
+
+var _fbedussi$elm_boilerplate$HistoryPage$getColorLabel = function (color) {
+	var _p0 = color;
+	if (_p0.ctor === 'Red') {
+		return 'red';
+	} else {
+		return 'green';
+	}
+};
+var _fbedussi$elm_boilerplate$HistoryPage$renderColor = function (passageData) {
+	return A2(
+		_elm_lang$html$Html$span,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(
+				_fbedussi$elm_boilerplate$HistoryPage$getColorLabel(passageData.color)),
+			_1: {ctor: '[]'}
+		});
+};
+var _fbedussi$elm_boilerplate$HistoryPage$history = function (model) {
 	var homePath = '/';
 	return A2(
 		_elm_lang$html$Html$div,
@@ -11048,7 +11055,7 @@ var _fbedussi$elm_boilerplate$View$history = function (model) {
 					_0: _elm_lang$html$Html_Attributes$class('north'),
 					_1: {ctor: '[]'}
 				},
-				A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$View$renderColor, model.data.north)),
+				A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$HistoryPage$renderColor, model.data.north)),
 			_1: {
 				ctor: '::',
 				_0: A2(
@@ -11058,7 +11065,7 @@ var _fbedussi$elm_boilerplate$View$history = function (model) {
 						_0: _elm_lang$html$Html_Attributes$class('south'),
 						_1: {ctor: '[]'}
 					},
-					A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$View$renderColor, model.data.south)),
+					A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$HistoryPage$renderColor, model.data.south)),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -11068,7 +11075,7 @@ var _fbedussi$elm_boilerplate$View$history = function (model) {
 							_0: _elm_lang$html$Html_Attributes$class('east'),
 							_1: {ctor: '[]'}
 						},
-						A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$View$renderColor, model.data.east)),
+						A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$HistoryPage$renderColor, model.data.east)),
 					_1: {
 						ctor: '::',
 						_0: A2(
@@ -11078,7 +11085,7 @@ var _fbedussi$elm_boilerplate$View$history = function (model) {
 								_0: _elm_lang$html$Html_Attributes$class('west'),
 								_1: {ctor: '[]'}
 							},
-							A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$View$renderColor, model.data.west)),
+							A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$HistoryPage$renderColor, model.data.west)),
 						_1: {
 							ctor: '::',
 							_0: A2(
@@ -11100,7 +11107,7 @@ var _fbedussi$elm_boilerplate$View$history = function (model) {
 												_0: _elm_lang$html$Html_Attributes$href(homePath),
 												_1: {
 													ctor: '::',
-													_0: _fbedussi$elm_boilerplate$View$onLinkClick(
+													_0: _fbedussi$elm_boilerplate$Helpers$onLinkClick(
 														_fbedussi$elm_boilerplate$Msgs$ChangeLocation(homePath)),
 													_1: {ctor: '[]'}
 												}
@@ -11120,13 +11127,22 @@ var _fbedussi$elm_boilerplate$View$history = function (model) {
 			}
 		});
 };
+
+var _fbedussi$elm_boilerplate$View$notFoundView = A2(
+	_elm_lang$html$Html$div,
+	{ctor: '[]'},
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html$text('Not found'),
+		_1: {ctor: '[]'}
+	});
 var _fbedussi$elm_boilerplate$View$view = function (model) {
-	var _p2 = model.route;
-	switch (_p2.ctor) {
+	var _p0 = model.route;
+	switch (_p0.ctor) {
 		case 'Home':
-			return _fbedussi$elm_boilerplate$View$homePage(model);
+			return _fbedussi$elm_boilerplate$HomePage$homePage(model);
 		case 'History':
-			return _fbedussi$elm_boilerplate$View$history(model);
+			return _fbedussi$elm_boilerplate$HistoryPage$history(model);
 		default:
 			return _fbedussi$elm_boilerplate$View$notFoundView;
 	}

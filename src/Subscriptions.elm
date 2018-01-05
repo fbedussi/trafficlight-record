@@ -31,13 +31,30 @@ decodeData value =
 dataDecoder : Decoder Data
 dataDecoder =
     map4 Data
-        (field "north" (list colorDecoder))
-        (field "south" (list colorDecoder))
-        (field "east" (list colorDecoder))
-        (field "west" (list colorDecoder))
+        (field "north" decodeDirection)
+        (field "south" decodeDirection)
+        (field "east" decodeDirection)
+        (field "west" decodeDirection)
 
 
-colorDecoder : Json.Decode.Decoder Color
+decodeDirection : Decoder (List PassageData)
+decodeDirection =
+    keyValuePairs passageDataDecoder
+        |> map (List.map Tuple.second)
+
+
+
+--map (\list -> List.map (\tuple -> Tuple.second tuple) list) (keyValuePairs passageDataDecoder)
+
+
+passageDataDecoder : Decoder PassageData
+passageDataDecoder =
+    map2 PassageData
+        (field "time" Json.Decode.float)
+        (field "color" colorDecoder)
+
+
+colorDecoder : Decoder Color
 colorDecoder =
     string
         |> andThen

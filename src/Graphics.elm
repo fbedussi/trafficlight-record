@@ -34,7 +34,7 @@ trafficLight direction =
             , Svg.path
                 [ d "M230.537 406.675a20.487 20.487 0 0 1 20.667-20.287 20.487 20.487 0 0 1 20.305 20.649 20.487 20.487 0 0 1-20.63 20.324 20.487 20.487 0 0 1-20.343-20.61"
                 , fill "red"
-                , onClick (RegisterColor direction Red)
+                , onClick (HandleClick direction Red)
                 ]
                 []
             , Svg.path
@@ -45,7 +45,7 @@ trafficLight direction =
             , Svg.path
                 [ d "M230.537 501.63a20.487 20.487 0 0 1 20.667-20.287 20.487 20.487 0 0 1 20.305 20.648 20.487 20.487 0 0 1-20.63 20.325 20.487 20.487 0 0 1-20.343-20.611"
                 , fill "green"
-                , onClick (RegisterColor direction Green)
+                , onClick (HandleClick direction Green)
                 ]
                 []
             ]

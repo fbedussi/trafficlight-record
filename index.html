@@ -16,9 +16,14 @@
         var app = Elm.App.embed(node);
 
         app.ports.sendCmdToFirebase.subscribe(function(cmd) {
-        //     debugger;
-            dbInterface[cmd.name](JSON.parse(cmd.payload))
+            var payload = JSON.parse(cmd.payload);
+            if (payload.hasOwnProperty('content')) {
+                payload.content = JSON.parse(payload.content);
+            }
+            //debugger;
+            dbInterface[cmd.name](payload)
                 .then((result, error) => {
+                    debugger;
                     app.ports.listenToFirebaseResponse.send(error || result[0])
                 })
         });
