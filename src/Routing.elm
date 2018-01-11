@@ -9,7 +9,8 @@ import UrlParser exposing (..)
 matchers : Parser (Route -> a) a
 matchers =
     oneOf
-        [ map Home top
+        [ map LoginPage top
+        , map Home (s "home")
         , map History (s "history")
         ]
 

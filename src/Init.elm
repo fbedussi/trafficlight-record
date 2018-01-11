@@ -1,6 +1,5 @@
 module Init exposing (..)
 
-import Firebase exposing (sendCmdToFirebase)
 import Json.Encode exposing (..)
 import Models exposing (FirebaseCmd, Model, resetModel)
 import Msgs exposing (Msg)
@@ -13,12 +12,5 @@ init location =
     let
         currentRoute =
             parseLocation location
-
-        readAllPayload =
-            object
-                [ ( "storeName", string "data" )
-                ]
     in
-    ( resetModel currentRoute
-    , sendCmdToFirebase (FirebaseCmd "readAll" (encode 0 readAllPayload))
-    )
+    ( resetModel currentRoute, Cmd.none )

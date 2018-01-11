@@ -8,6 +8,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Decode
 import List exposing (map)
+import LoginPage exposing (loginPage)
 import Models exposing (..)
 import Msgs exposing (..)
 
@@ -15,6 +16,9 @@ import Msgs exposing (..)
 view : Model -> Html Msg
 view model =
     case model.route of
+        Models.LoginPage ->
+            loginPage model
+
         Models.Home ->
             homePage model
 

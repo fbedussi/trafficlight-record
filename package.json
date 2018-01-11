@@ -12,9 +12,10 @@
     "buildCss": "postcss ./src/*.css --use autoprefixer -d ./",
     "watchCss": "postcss ./src/*.css --use autoprefixer -w -d ./",
     "server": "live-server --port=8080 --entry-file=./index.html",
-    "dev": "parallelshell \"npm run watchElm\" \"npm run watchCss\" \"npm run server\"",
+    "dev": "parallelshell \"npm run watchBackend\" \"npm run watchElm\" \"npm run watchCss\" \"npm run server\"",
     "debug": "parallelshell \"npm run watchElmDebug\" \"npm run watchCss\" \"npm run server\"",
-    "buildDb": "node_modules\\.bin\\webpack --config webpack.config.js"
+    "buildBackend": "node_modules\\.bin\\webpack --config webpack.config.js",
+    "watchBackend": "chokidar ./src/**/*.js -c \"npm run buildBackend\""
   },
   "keywords": [],
   "author": "Francesco Bedussi",

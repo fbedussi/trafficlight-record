@@ -21,7 +21,7 @@ var db;
 db = firebase;
 
 //All methods return a promise
-window.dbInterface = {
+export default {
     openDb: db.openDb,
 
     create: db.create,

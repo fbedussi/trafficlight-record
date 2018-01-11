@@ -2,7 +2,7 @@ module Subscriptions exposing (..)
 
 --import Json.Encode
 
-import Firebase exposing (listenToFirebaseResponse)
+import Firebase exposing (listenToFirebaseAuthResponse, listenToFirebaseDbResponse)
 import Json.Decode exposing (..)
 import Models exposing (..)
 import Msgs exposing (Msg)
@@ -10,7 +10,10 @@ import Msgs exposing (Msg)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    listenToFirebaseResponse (decodeData >> Msgs.NewData)
+    Sub.batch
+        [ listenToFirebaseDbResponse (decodeData >> Msgs.NewData)
+        , listenToFirebaseAuthResponse (\value -> Msgs.NewUser (decodeUser value))
+        ]
 
 
 
@@ -41,10 +44,6 @@ decodeDirection : Decoder (List PassageData)
 decodeDirection =
     keyValuePairs passageDataDecoder
         |> map (List.map Tuple.second)
-
-
-
---map (\list -> List.map (\tuple -> Tuple.second tuple) list) (keyValuePairs passageDataDecoder)
 
 
 passageDataDecoder : Decoder PassageData
@@ -80,3 +79,8 @@ colorDecoder =
 --         , ( "east", Json.Encode.list <| List.map Json.Encode.string <| record.east )
 --         , ( "west", Json.Encode.list <| List.map Json.Encode.string <| record.west )
 --         ]
+
+
+decodeUser : Value -> Result String UserUid
+decodeUser value =
+    decodeValue string value

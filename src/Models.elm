@@ -6,11 +6,14 @@ import Time exposing (Time)
 type alias Model =
     { route : Route
     , data : Data
+    , loginData : LoginData
+    , userUid : UserUid
     }
 
 
 type Route
-    = Home
+    = LoginPage
+    | Home
     | History
     | NotFoundRoute
 
@@ -55,6 +58,29 @@ type alias FirebaseCmd =
     }
 
 
+type alias Email =
+    String
+
+
+type alias Password =
+    String
+
+
+type alias LoginData =
+    { email : Email
+    , password : Password
+    }
+
+
+type LoginField
+    = Email
+    | Password
+
+
+type alias UserUid =
+    String
+
+    
 resetModel : Route -> Model
 resetModel route =
     Model
@@ -64,3 +90,9 @@ resetModel route =
         , east = []
         , west = []
         }
+        { email = ""
+        , password = ""
+        }
+        ""
+
+

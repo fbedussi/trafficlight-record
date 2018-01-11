@@ -4,7 +4,13 @@ import Json.Decode
 import Models exposing (..)
 
 
-port sendCmdToFirebase : FirebaseCmd -> Cmd msg
+port sendCmdToFirebaseDb : FirebaseCmd -> Cmd msg
 
 
-port listenToFirebaseResponse : (Json.Decode.Value -> msg) -> Sub msg
+port sendCmdToFirebaseAuth : FirebaseCmd -> Cmd msg
+
+
+port listenToFirebaseDbResponse : (Json.Decode.Value -> msg) -> Sub msg
+
+
+port listenToFirebaseAuthResponse : (Json.Decode.Value -> msg) -> Sub msg

@@ -9,22 +9,30 @@
 
 <body>
     <div id="main"></div>
-    <script src="db.js"></script>
+    <script src="backend.js"></script>
     <script src="app.js"></script>
     <script>
         var node = document.getElementById('main');
         var app = Elm.App.embed(node);
-
-        app.ports.sendCmdToFirebase.subscribe(function(cmd) {
+        app.ports.sendCmdToFirebaseAuth.subscribe(function(cmd) {
+            debugger;
+            var payload = JSON.parse(cmd.payload);
+            authInterface[cmd.name](payload)
+                .then((user, error) => {
+                    debugger;
+                    app.ports.listenToFirebaseAuthResponse.send(error || user.uid)
+                })
+        });
+        app.ports.sendCmdToFirebaseDb.subscribe(function(cmd) {
             var payload = JSON.parse(cmd.payload);
             if (payload.hasOwnProperty('content')) {
                 payload.content = JSON.parse(payload.content);
             }
-            //debugger;
+            debugger;
             dbInterface[cmd.name](payload)
                 .then((result, error) => {
                     debugger;
-                    app.ports.listenToFirebaseResponse.send(error || result[0])
+                    app.ports.listenToFirebaseDbResponse.send(error || result[0])
                 })
         });
     </script>

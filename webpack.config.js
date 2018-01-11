@@ -1,9 +1,9 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/db/dbFacade.js',
+  entry: './src/backend.js',
   output: {
-    filename: 'db.js',
+    filename: 'backend.js',
     path: path.resolve(__dirname)
   }
 };
