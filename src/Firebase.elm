@@ -4,7 +4,7 @@ import Json.Decode
 import Models exposing (..)
 
 
-port sendCmdToFirebaseDb : FirebaseCmd -> Cmd msg
+port sendCmdToFirebasegit Db : FirebaseCmd -> Cmd msg
 
 
 port sendCmdToFirebaseAuth : FirebaseCmd -> Cmd msg
