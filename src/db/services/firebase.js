@@ -3,9 +3,11 @@ import firebase from './firebaseInit';
 const db = firebase.database();
 var userUid;
 
-const openDb = (payload) => new Promise(({resolve, reject}) => {
+const openDb = (payload) => new Promise((resolve, reject) => {
   userUid = payload.userUid
-  //resolve(dbInterface);
+  console.log('UID', userUid);
+  debugger;
+  resolve();
 });
 
 const createInStore = ({storeName = data, content}) => db

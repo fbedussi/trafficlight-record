@@ -10219,7 +10219,7 @@ var _evancz$url_parser$UrlParser$intParam = function (name) {
 
 var _fbedussi$elm_boilerplate$Models$Model = F4(
 	function (a, b, c, d) {
-		return {route: a, data: b, loginData: c, userUid: d};
+		return {route: a, data: b, loginData: c, errorMsg: d};
 	});
 var _fbedussi$elm_boilerplate$Models$resetModel = function (route) {
 	return A4(
@@ -10231,7 +10231,7 @@ var _fbedussi$elm_boilerplate$Models$resetModel = function (route) {
 			east: {ctor: '[]'},
 			west: {ctor: '[]'}
 		},
-		{email: '', password: ''},
+		{email: '', password: '', authenticated: false},
 		'');
 };
 var _fbedussi$elm_boilerplate$Models$PassageData = F2(
@@ -10246,9 +10246,9 @@ var _fbedussi$elm_boilerplate$Models$FirebaseCmd = F2(
 	function (a, b) {
 		return {name: a, payload: b};
 	});
-var _fbedussi$elm_boilerplate$Models$LoginData = F2(
-	function (a, b) {
-		return {email: a, password: b};
+var _fbedussi$elm_boilerplate$Models$LoginData = F3(
+	function (a, b, c) {
+		return {email: a, password: b, authenticated: c};
 	});
 var _fbedussi$elm_boilerplate$Models$NotFoundRoute = {ctor: 'NotFoundRoute'};
 var _fbedussi$elm_boilerplate$Models$History = {ctor: 'History'};
@@ -10263,6 +10263,7 @@ var _fbedussi$elm_boilerplate$Models$Red = {ctor: 'Red'};
 var _fbedussi$elm_boilerplate$Models$Password = {ctor: 'Password'};
 var _fbedussi$elm_boilerplate$Models$Email = {ctor: 'Email'};
 
+var _fbedussi$elm_boilerplate$Msgs$NoAction = {ctor: 'NoAction'};
 var _fbedussi$elm_boilerplate$Msgs$RegisterColor = F3(
 	function (a, b, c) {
 		return {ctor: 'RegisterColor', _0: a, _1: b, _2: c};
@@ -10274,11 +10275,10 @@ var _fbedussi$elm_boilerplate$Msgs$HandleClick = F2(
 var _fbedussi$elm_boilerplate$Msgs$NewData = function (a) {
 	return {ctor: 'NewData', _0: a};
 };
-var _fbedussi$elm_boilerplate$Msgs$NewUser = function (a) {
-	return {ctor: 'NewUser', _0: a};
+var _fbedussi$elm_boilerplate$Msgs$UserAuthenticated = function (a) {
+	return {ctor: 'UserAuthenticated', _0: a};
 };
 var _fbedussi$elm_boilerplate$Msgs$ReadAllData = {ctor: 'ReadAllData'};
-var _fbedussi$elm_boilerplate$Msgs$OpenDb = {ctor: 'OpenDb'};
 var _fbedussi$elm_boilerplate$Msgs$Login = {ctor: 'Login'};
 var _fbedussi$elm_boilerplate$Msgs$UpdateLoginData = F2(
 	function (a, b) {
@@ -10392,7 +10392,7 @@ var _fbedussi$elm_boilerplate$Subscriptions$subscriptions = function (model) {
 				ctor: '::',
 				_0: _fbedussi$elm_boilerplate$Firebase$listenToFirebaseAuthResponse(
 					function (value) {
-						return _fbedussi$elm_boilerplate$Msgs$NewUser(
+						return _fbedussi$elm_boilerplate$Msgs$UserAuthenticated(
 							_fbedussi$elm_boilerplate$Subscriptions$decodeUser(value));
 					}),
 				_1: {ctor: '[]'}
@@ -10551,26 +10551,70 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 							'logIn',
 							A2(_elm_lang$core$Json_Encode$encode, 0, loginPayload)))
 				};
-			case 'OpenDb':
-				var openPayload = _elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'userUid',
-							_1: _elm_lang$core$Json_Encode$string(model.userUid)
-						},
-						_1: {ctor: '[]'}
-					});
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebaseDb(
-						A2(
-							_fbedussi$elm_boilerplate$Models$FirebaseCmd,
-							'openDb',
-							A2(_elm_lang$core$Json_Encode$encode, 0, openPayload)))
-				};
+			case 'UserAuthenticated':
+				if (_p1._0.ctor === 'Ok') {
+					var _p5 = _p1._0._0;
+					var log = A2(_elm_lang$core$Debug$log, 'ELM UID', _p5);
+					var readAllPayload = _elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'storeName',
+								_1: _elm_lang$core$Json_Encode$string('data')
+							},
+							_1: {ctor: '[]'}
+						});
+					var loginData = A3(_fbedussi$elm_boilerplate$Models$LoginData, model.loginData.email, '', true);
+					var openPayload = _elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'userUid',
+								_1: _elm_lang$core$Json_Encode$string(_p5)
+							},
+							_1: {ctor: '[]'}
+						});
+					return {
+						ctor: '_Tuple2',
+						_0: A4(_fbedussi$elm_boilerplate$Models$Model, _fbedussi$elm_boilerplate$Models$Home, model.data, loginData, ''),
+						_1: A2(
+							_elm_lang$core$Task$perform,
+							function (_p4) {
+								return _fbedussi$elm_boilerplate$Msgs$NoAction;
+							},
+							_elm_lang$core$Task$sequence(
+								{
+									ctor: '::',
+									_0: _elm_lang$core$Task$succeed(
+										_fbedussi$elm_boilerplate$Firebase$sendCmdToFirebaseDb(
+											A2(
+												_fbedussi$elm_boilerplate$Models$FirebaseCmd,
+												'openDb',
+												A2(_elm_lang$core$Json_Encode$encode, 0, openPayload)))),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$core$Task$succeed(
+											_fbedussi$elm_boilerplate$Firebase$sendCmdToFirebaseDb(
+												A2(
+													_fbedussi$elm_boilerplate$Models$FirebaseCmd,
+													'readAll',
+													A2(_elm_lang$core$Json_Encode$encode, 0, readAllPayload)))),
+										_1: {ctor: '[]'}
+									}
+								}))
+					};
+				} else {
+					var log = A2(_elm_lang$core$Debug$log, 'Auth Error', _p1._0._0);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{errorMsg: 'wrong email or passowrd'}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
 			case 'ReadAllData':
 				var readAllPayload = _elm_lang$core$Json_Encode$object(
 					{
@@ -10591,54 +10635,6 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 							'readAll',
 							A2(_elm_lang$core$Json_Encode$encode, 0, readAllPayload)))
 				};
-			case 'NewUser':
-				if (_p1._0.ctor === 'Ok') {
-					var readAllPayload = _elm_lang$core$Json_Encode$object(
-						{
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'storeName',
-								_1: _elm_lang$core$Json_Encode$string('data')
-							},
-							_1: {ctor: '[]'}
-						});
-					var openPayload = _elm_lang$core$Json_Encode$object(
-						{
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'userUid',
-								_1: _elm_lang$core$Json_Encode$string(model.userUid)
-							},
-							_1: {ctor: '[]'}
-						});
-					return {
-						ctor: '_Tuple2',
-						_0: A4(_fbedussi$elm_boilerplate$Models$Model, _fbedussi$elm_boilerplate$Models$Home, model.data, model.loginData, _p1._0._0),
-						_1: _elm_lang$core$Platform_Cmd$batch(
-							{
-								ctor: '::',
-								_0: _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebaseDb(
-									A2(
-										_fbedussi$elm_boilerplate$Models$FirebaseCmd,
-										'openDb',
-										A2(_elm_lang$core$Json_Encode$encode, 0, openPayload))),
-								_1: {
-									ctor: '::',
-									_0: _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebaseDb(
-										A2(
-											_fbedussi$elm_boilerplate$Models$FirebaseCmd,
-											'readAll',
-											A2(_elm_lang$core$Json_Encode$encode, 0, readAllPayload))),
-									_1: {ctor: '[]'}
-								}
-							})
-					};
-				} else {
-					var log = A2(_elm_lang$core$Debug$log, 'newUser error', _p1._0._0);
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
 			case 'NewData':
 				if (_p1._0.ctor === 'Ok') {
 					return {
@@ -10661,17 +10657,17 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 						A2(_fbedussi$elm_boilerplate$Msgs$RegisterColor, _p1._0, _p1._1),
 						_elm_lang$core$Time$now)
 				};
-			default:
-				var _p6 = _p1._2;
-				var _p5 = _p1._0;
-				var _p4 = _p1._1;
+			case 'RegisterColor':
+				var _p8 = _p1._2;
+				var _p7 = _p1._0;
+				var _p6 = _p1._1;
 				var encodedNewPassageData = _elm_lang$core$Json_Encode$object(
 					{
 						ctor: '::',
 						_0: {
 							ctor: '_Tuple2',
 							_0: 'time',
-							_1: _elm_lang$core$Json_Encode$float(_p6)
+							_1: _elm_lang$core$Json_Encode$float(_p8)
 						},
 						_1: {
 							ctor: '::',
@@ -10680,7 +10676,7 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 								_0: 'color',
 								_1: _elm_lang$core$Json_Encode$string(
 									_elm_lang$core$String$toLower(
-										_elm_lang$core$Basics$toString(_p4)))
+										_elm_lang$core$Basics$toString(_p6)))
 							},
 							_1: {ctor: '[]'}
 						}
@@ -10696,7 +10692,7 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 									_elm_lang$core$Basics_ops['++'],
 									'data/',
 									_elm_lang$core$String$toLower(
-										_elm_lang$core$Basics$toString(_p5))))
+										_elm_lang$core$Basics$toString(_p7))))
 						},
 						_1: {
 							ctor: '::',
@@ -10709,8 +10705,8 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 							_1: {ctor: '[]'}
 						}
 					});
-				var newPassageData = A2(_fbedussi$elm_boilerplate$Models$PassageData, _p6, _p4);
-				var updatedData = A3(_fbedussi$elm_boilerplate$Update$updateData, model.data, _p5, newPassageData);
+				var newPassageData = A2(_fbedussi$elm_boilerplate$Models$PassageData, _p8, _p6);
+				var updatedData = A3(_fbedussi$elm_boilerplate$Update$updateData, model.data, _p7, newPassageData);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -10722,6 +10718,8 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 							'create',
 							A2(_elm_lang$core$Json_Encode$encode, 0, createPayload)))
 				};
+			default:
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
 
@@ -11329,105 +11327,72 @@ var _fbedussi$elm_boilerplate$LoginPage$loginPage = function (model) {
 		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$form,
+				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('loginForm'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onSubmit(_fbedussi$elm_boilerplate$Msgs$Login),
-						_1: {ctor: '[]'}
-					}
+					_0: _elm_lang$html$Html_Attributes$hidden(
+						_elm_lang$core$String$isEmpty(model.errorMsg) ? true : false),
+					_1: {ctor: '[]'}
 				},
 				{
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$label,
-						{
+					_0: _elm_lang$html$Html$text(model.errorMsg),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$form,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('loginForm'),
+						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('label'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$for('emailField'),
-								_1: {ctor: '[]'}
-							}
-						},
-						{ctor: '[]'}),
-					_1: {
+							_0: _elm_lang$html$Html_Events$onSubmit(_fbedussi$elm_boilerplate$Msgs$Login),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$input,
+							_elm_lang$html$Html$label,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('textInput'),
+								_0: _elm_lang$html$Html_Attributes$class('label'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$id('emailField'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$name('email'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$type_('email'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$value(model.loginData.email),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$placeholder('me@example.com'),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onInput(
-															function (val) {
-																return A2(_fbedussi$elm_boilerplate$Msgs$UpdateLoginData, _fbedussi$elm_boilerplate$Models$Email, val);
-															}),
-														_1: {ctor: '[]'}
-													}
-												}
-											}
-										}
-									}
+									_0: _elm_lang$html$Html_Attributes$for('emailField'),
+									_1: {ctor: '[]'}
 								}
 							},
 							{ctor: '[]'}),
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$label,
+								_elm_lang$html$Html$input,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('label'),
+									_0: _elm_lang$html$Html_Attributes$class('textInput'),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$for('passwordField'),
-										_1: {ctor: '[]'}
-									}
-								},
-								{ctor: '[]'}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$input,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('textInput'),
+										_0: _elm_lang$html$Html_Attributes$id('emailField'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$id('passwordField'),
+											_0: _elm_lang$html$Html_Attributes$name('email'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$name('password'),
+												_0: _elm_lang$html$Html_Attributes$type_('email'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$type_('password'),
+													_0: _elm_lang$html$Html_Attributes$value(model.loginData.email),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$value(model.loginData.password),
+														_0: _elm_lang$html$Html_Attributes$placeholder('me@example.com'),
 														_1: {
 															ctor: '::',
 															_0: _elm_lang$html$Html_Events$onInput(
 																function (val) {
-																	return A2(_fbedussi$elm_boilerplate$Msgs$UpdateLoginData, _fbedussi$elm_boilerplate$Models$Password, val);
+																	return A2(_fbedussi$elm_boilerplate$Msgs$UpdateLoginData, _fbedussi$elm_boilerplate$Models$Email, val);
 																}),
 															_1: {ctor: '[]'}
 														}
@@ -11435,33 +11400,82 @@ var _fbedussi$elm_boilerplate$LoginPage$loginPage = function (model) {
 												}
 											}
 										}
+									}
+								},
+								{ctor: '[]'}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$label,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('label'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$for('passwordField'),
+											_1: {ctor: '[]'}
+										}
 									},
 									{ctor: '[]'}),
 								_1: {
 									ctor: '::',
 									_0: A2(
-										_elm_lang$html$Html$button,
+										_elm_lang$html$Html$input,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('btn'),
+											_0: _elm_lang$html$Html_Attributes$class('textInput'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$type_('submit'),
-												_1: {ctor: '[]'}
+												_0: _elm_lang$html$Html_Attributes$id('passwordField'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$name('password'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$type_('password'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$value(model.loginData.password),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Events$onInput(
+																	function (val) {
+																		return A2(_fbedussi$elm_boilerplate$Msgs$UpdateLoginData, _fbedussi$elm_boilerplate$Models$Password, val);
+																	}),
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												}
 											}
 										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('login'),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
+										{ctor: '[]'}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$button,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('btn'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$type_('submit'),
+													_1: {ctor: '[]'}
+												}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('login'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						}
-					}
-				}),
-			_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
 		});
 };
 

@@ -7,7 +7,7 @@ type alias Model =
     { route : Route
     , data : Data
     , loginData : LoginData
-    , userUid : UserUid
+    , errorMsg: String
     }
 
 
@@ -69,6 +69,7 @@ type alias Password =
 type alias LoginData =
     { email : Email
     , password : Password
+    , authenticated: Bool
     }
 
 
@@ -92,6 +93,7 @@ resetModel route =
         }
         { email = ""
         , password = ""
+        , authenticated = False
         }
         ""
 

@@ -10,9 +10,9 @@ type Msg
     | ChangeLocation String
     | UpdateLoginData LoginField String
     | Login
-    | OpenDb
     | ReadAllData
-    | NewUser (Result String UserUid)
+    | UserAuthenticated (Result String UserUid)
     | NewData (Result String Data)
     | HandleClick Direction Color
     | RegisterColor Direction Color Time
+    | NoAction

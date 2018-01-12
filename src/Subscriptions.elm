@@ -12,7 +12,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ listenToFirebaseDbResponse (decodeData >> Msgs.NewData)
-        , listenToFirebaseAuthResponse (\value -> Msgs.NewUser (decodeUser value))
+        , listenToFirebaseAuthResponse (\value -> Msgs.UserAuthenticated (decodeUser value))
         ]
 
 

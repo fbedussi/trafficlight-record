@@ -18,9 +18,13 @@
             debugger;
             var payload = JSON.parse(cmd.payload);
             authInterface[cmd.name](payload)
-                .then((user, error) => {
+                .then((user) => {
                     debugger;
-                    app.ports.listenToFirebaseAuthResponse.send(error || user.uid)
+                    app.ports.listenToFirebaseAuthResponse.send(user.uid)
+                })
+                .catch((error) => {
+                    //debugger;
+                    app.ports.listenToFirebaseAuthResponse.send(error)
                 })
         });
         app.ports.sendCmdToFirebaseDb.subscribe(function(cmd) {
@@ -32,7 +36,7 @@
             dbInterface[cmd.name](payload)
                 .then((result, error) => {
                     debugger;
-                    app.ports.listenToFirebaseDbResponse.send(error || result[0])
+                    app.ports.listenToFirebaseDbResponse.send(error || result ? result[0] : null)
                 })
         });
     </script>

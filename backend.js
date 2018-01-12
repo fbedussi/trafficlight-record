@@ -26402,9 +26402,11 @@ db = __WEBPACK_IMPORTED_MODULE_1__services_firebase__["a" /* default */];
 const db = __WEBPACK_IMPORTED_MODULE_0__firebaseInit__["a" /* default */].database();
 var userUid;
 
-const openDb = (payload) => new Promise(({resolve, reject}) => {
+const openDb = (payload) => new Promise((resolve, reject) => {
   userUid = payload.userUid
-  //resolve(dbInterface);
+  console.log('UID', userUid);
+  debugger;
+  resolve();
 });
 
 const createInStore = ({storeName = data, content}) => db
@@ -26463,3 +26465,4 @@ const dbInterface = {
 
 /***/ })
 /******/ ]);
+//# sourceMappingURL=backend.js.map

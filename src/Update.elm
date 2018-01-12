@@ -48,22 +48,37 @@ update msg model =
             in
             ( model, sendCmdToFirebaseAuth (FirebaseCmd "logIn" (encode 0 loginPayload)) )
 
-        NewUser (Ok userUid) ->
-            ( Model
-                Home
-                model.data
-                model.loginData
-                userUid
-            , Task.perform (Task.sequence [ OpenDb |> Task.succeed, ReadAllData |> Task.succeed ]) Time.now
-            )
-
-        OpenDb ->
+        UserAuthenticated (Ok userUid) ->
             let
                 openPayload =
                     object
-                        [ ( "userUid", string model.userUid ) ]
+                        [ ( "userUid", string userUid ) ]
+                
+                loginData = LoginData
+                    model.loginData.email
+                    ""
+                    True
+
+                readAllPayload =
+                    object
+                        [ ( "storeName", string "data" ) ]
+
+                log = Debug.log "ELM UID" userUid
             in
-            ( model, FirebaseCmd "openDb" (encode 0 openPayload) |> sendCmdToFirebaseDb )
+            ( Model
+                Home
+                model.data
+                loginData
+                ""
+            , Task.perform (\_ -> NoAction) (Task.sequence [ (FirebaseCmd "openDb" (encode 0 openPayload) |> sendCmdToFirebaseDb), (FirebaseCmd "readAll" (encode 0 readAllPayload) |> sendCmdToFirebaseDb)])
+            
+            )
+        
+        UserAuthenticated (Err error) ->
+            let
+                log = Debug.log "Auth Error" error
+            in
+            ( {model | errorMsg = "wrong email or passowrd" }, Cmd.none )
 
         ReadAllData ->
             let
@@ -73,12 +88,6 @@ update msg model =
             in
             ( model, FirebaseCmd "readAll" (encode 0 readAllPayload) |> sendCmdToFirebaseDb )
 
-        NewUser (Err error) ->
-            let
-                log =
-                    Debug.log "newUser error" error
-            in
-            ( model, Cmd.none )
 
         NewData (Ok data) ->
             ( { model | data = data }, Cmd.none )
@@ -114,6 +123,9 @@ update msg model =
                         ]
             in
             ( { model | data = updatedData }, sendCmdToFirebaseDb (FirebaseCmd "create" (encode 0 createPayload)) )
+        
+        NoAction ->
+            (model, Cmd.none)
 
 
 updateData : Data -> Direction -> PassageData -> Data

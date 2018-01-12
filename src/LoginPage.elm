@@ -1,10 +1,10 @@
 module LoginPage exposing (..)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Models exposing (..)
+import Html exposing (Html, div, button, input, label, text)
+import Html.Attributes exposing (class, type_, id, name, value, for, placeholder, hidden)
+import Html.Events exposing (onSubmit, onInput)
+import Models exposing (Model, Password, Email)
 import Msgs exposing (..)
-import Html.Events exposing (..)
 
 
 loginPage : Model -> Html Msg
@@ -15,7 +15,10 @@ loginPage model =
     in
     div
         [ class "loginPage" ]
-        [ Html.form
+        [ div 
+            [ hidden (if String.isEmpty model.errorMsg then True else False) ]
+            [ text model.errorMsg ]
+        , Html.form
             [ class "loginForm"
             , onSubmit Login
             ]
@@ -31,7 +34,7 @@ loginPage model =
                 , type_ "email"
                 , value model.loginData.email
                 , placeholder "me@example.com"
-                , onInput (\val -> (UpdateLoginData Email val))                 
+                , onInput (\val -> UpdateLoginData Email val)
                 ]
                 []
             , label
@@ -45,12 +48,13 @@ loginPage model =
                 , name "password"
                 , type_ "password"
                 , value model.loginData.password
-                , onInput (\val -> (UpdateLoginData Password val)) 
+                , onInput (\val -> UpdateLoginData Password val)
                 ]
                 []
             , button
-                [class "btn"
-                , type_ "submit"]
-                [text "login"]
+                [ class "btn"
+                , type_ "submit"
+                ]
+                [ text "login" ]
             ]
         ]
