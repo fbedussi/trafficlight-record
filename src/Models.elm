@@ -7,7 +7,7 @@ type alias Model =
     { route : Route
     , data : Data
     , loginData : LoginData
-    , errorMsg: String
+    , errorMsg : String
     }
 
 
@@ -52,12 +52,6 @@ type alias JsonString =
     String
 
 
-type alias FirebaseCmd =
-    { name : String
-    , payload : JsonString
-    }
-
-
 type alias Email =
     String
 
@@ -69,7 +63,7 @@ type alias Password =
 type alias LoginData =
     { email : Email
     , password : Password
-    , authenticated: Bool
+    , authenticated : Bool
     }
 
 
@@ -81,7 +75,7 @@ type LoginField
 type alias UserUid =
     String
 
-    
+
 resetModel : Route -> Model
 resetModel route =
     Model
@@ -96,5 +90,3 @@ resetModel route =
         , authenticated = False
         }
         ""
-
-

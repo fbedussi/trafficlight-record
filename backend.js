@@ -26402,14 +26402,13 @@ db = __WEBPACK_IMPORTED_MODULE_1__services_firebase__["a" /* default */];
 const db = __WEBPACK_IMPORTED_MODULE_0__firebaseInit__["a" /* default */].database();
 var userUid;
 
-const openDb = (payload) => new Promise((resolve, reject) => {
-  userUid = payload.userUid
+const openDb = (uid) => new Promise((resolve, reject) => {
+  userUid = uid;
   console.log('UID', userUid);
-  debugger;
-  resolve();
+  resolve(true);
 });
 
-const createInStore = ({storeName = data, content}) => db
+const createInStore = ({storeName = 'data', content}) => db
     //.ref(`users/${user.uid}/${storeName}/${content.id}`)
     //.ref(`${storeName}/${content.id}`)
     .ref(`users/${userUid}/${storeName}/`)

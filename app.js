@@ -10242,10 +10242,6 @@ var _fbedussi$elm_boilerplate$Models$Data = F4(
 	function (a, b, c, d) {
 		return {north: a, south: b, east: c, west: d};
 	});
-var _fbedussi$elm_boilerplate$Models$FirebaseCmd = F2(
-	function (a, b) {
-		return {name: a, payload: b};
-	});
 var _fbedussi$elm_boilerplate$Models$LoginData = F3(
 	function (a, b, c) {
 		return {email: a, password: b, authenticated: c};
@@ -10263,7 +10259,255 @@ var _fbedussi$elm_boilerplate$Models$Red = {ctor: 'Red'};
 var _fbedussi$elm_boilerplate$Models$Password = {ctor: 'Password'};
 var _fbedussi$elm_boilerplate$Models$Email = {ctor: 'Email'};
 
-var _fbedussi$elm_boilerplate$Msgs$NoAction = {ctor: 'NoAction'};
+var _fbedussi$elm_boilerplate$Decoder$colorDecoder = A2(
+	_elm_lang$core$Json_Decode$andThen,
+	function (str) {
+		var _p0 = str;
+		switch (_p0) {
+			case 'red':
+				return _elm_lang$core$Json_Decode$succeed(_fbedussi$elm_boilerplate$Models$Red);
+			case 'green':
+				return _elm_lang$core$Json_Decode$succeed(_fbedussi$elm_boilerplate$Models$Green);
+			default:
+				return _elm_lang$core$Json_Decode$fail(
+					A2(_elm_lang$core$Basics_ops['++'], 'Unknown color: ', _p0));
+		}
+	},
+	_elm_lang$core$Json_Decode$string);
+var _fbedussi$elm_boilerplate$Decoder$passageDataDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_fbedussi$elm_boilerplate$Models$PassageData,
+	A2(_elm_lang$core$Json_Decode$field, 'time', _elm_lang$core$Json_Decode$float),
+	A2(_elm_lang$core$Json_Decode$field, 'color', _fbedussi$elm_boilerplate$Decoder$colorDecoder));
+var _fbedussi$elm_boilerplate$Decoder$decodeDirection = A2(
+	_elm_lang$core$Json_Decode$map,
+	_elm_lang$core$List$map(_elm_lang$core$Tuple$second),
+	_elm_lang$core$Json_Decode$keyValuePairs(_fbedussi$elm_boilerplate$Decoder$passageDataDecoder));
+var _fbedussi$elm_boilerplate$Decoder$dataDecoder = A5(
+	_elm_lang$core$Json_Decode$map4,
+	_fbedussi$elm_boilerplate$Models$Data,
+	A2(_elm_lang$core$Json_Decode$field, 'north', _fbedussi$elm_boilerplate$Decoder$decodeDirection),
+	A2(_elm_lang$core$Json_Decode$field, 'south', _fbedussi$elm_boilerplate$Decoder$decodeDirection),
+	A2(_elm_lang$core$Json_Decode$field, 'east', _fbedussi$elm_boilerplate$Decoder$decodeDirection),
+	A2(_elm_lang$core$Json_Decode$field, 'west', _fbedussi$elm_boilerplate$Decoder$decodeDirection));
+var _fbedussi$elm_boilerplate$Decoder$decodeData = function (value) {
+	return A2(_elm_lang$core$Json_Decode$decodeValue, _fbedussi$elm_boilerplate$Decoder$dataDecoder, value);
+};
+var _fbedussi$elm_boilerplate$Decoder$decodeUser = function (value) {
+	return A2(_elm_lang$core$Json_Decode$decodeValue, _elm_lang$core$Json_Decode$string, value);
+};
+var _fbedussi$elm_boilerplate$Decoder$decodeDbOpened = function (value) {
+	return A2(_elm_lang$core$Json_Decode$decodeValue, _elm_lang$core$Json_Decode$bool, value);
+};
+
+var _fbedussi$elm_boilerplate$OutsideInfo$infoForOutside = _elm_lang$core$Native_Platform.outgoingPort(
+	'infoForOutside',
+	function (v) {
+		return {tag: v.tag, data: v.data};
+	});
+var _fbedussi$elm_boilerplate$OutsideInfo$sendInfoOutside = function (info) {
+	var _p0 = info;
+	switch (_p0.ctor) {
+		case 'LoginRequest':
+			var _p1 = _p0._0;
+			var loginPayload = _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'method',
+						_1: _elm_lang$core$Json_Encode$string('email')
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'email',
+							_1: _elm_lang$core$Json_Encode$string(_p1.email)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'password',
+								_1: _elm_lang$core$Json_Encode$string(_p1.password)
+							},
+							_1: {ctor: '[]'}
+						}
+					}
+				});
+			return _fbedussi$elm_boilerplate$OutsideInfo$infoForOutside(
+				{tag: 'login', data: loginPayload});
+		case 'OpenDb':
+			return _fbedussi$elm_boilerplate$OutsideInfo$infoForOutside(
+				{
+					tag: 'openDb',
+					data: _elm_lang$core$Json_Encode$string(_p0._0)
+				});
+		case 'ReadAllData':
+			var readAllPayload = _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'storeName',
+						_1: _elm_lang$core$Json_Encode$string('data')
+					},
+					_1: {ctor: '[]'}
+				});
+			return _fbedussi$elm_boilerplate$OutsideInfo$infoForOutside(
+				{tag: 'readAllData', data: readAllPayload});
+		default:
+			var _p2 = _p0._1;
+			var passageDataEncoded = _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'time',
+						_1: _elm_lang$core$Json_Encode$float(_p2.time)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'color',
+							_1: _elm_lang$core$Json_Encode$string(
+								_elm_lang$core$String$toLower(
+									_elm_lang$core$Basics$toString(_p2.color)))
+						},
+						_1: {ctor: '[]'}
+					}
+				});
+			var writeDataPayload = _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'direction',
+						_1: _elm_lang$core$Json_Encode$string(
+							_elm_lang$core$String$toLower(
+								_elm_lang$core$Basics$toString(_p0._0)))
+					},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'passageData', _1: passageDataEncoded},
+						_1: {ctor: '[]'}
+					}
+				});
+			return _fbedussi$elm_boilerplate$OutsideInfo$infoForOutside(
+				{tag: 'writeData', data: writeDataPayload});
+	}
+};
+var _fbedussi$elm_boilerplate$OutsideInfo$infoForElm = _elm_lang$core$Native_Platform.incomingPort(
+	'infoForElm',
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (tag) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (data) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{tag: tag, data: data});
+				},
+				A2(_elm_lang$core$Json_Decode$field, 'data', _elm_lang$core$Json_Decode$value));
+		},
+		A2(_elm_lang$core$Json_Decode$field, 'tag', _elm_lang$core$Json_Decode$string)));
+var _fbedussi$elm_boilerplate$OutsideInfo$GenericOutsideData = F2(
+	function (a, b) {
+		return {tag: a, data: b};
+	});
+var _fbedussi$elm_boilerplate$OutsideInfo$WriteData = F2(
+	function (a, b) {
+		return {ctor: 'WriteData', _0: a, _1: b};
+	});
+var _fbedussi$elm_boilerplate$OutsideInfo$ReadAllData = {ctor: 'ReadAllData'};
+var _fbedussi$elm_boilerplate$OutsideInfo$OpenDb = function (a) {
+	return {ctor: 'OpenDb', _0: a};
+};
+var _fbedussi$elm_boilerplate$OutsideInfo$switchInfoForElm = F2(
+	function (infoForElm, model) {
+		var _p3 = infoForElm;
+		switch (_p3.ctor) {
+			case 'UserLoggedIn':
+				var loginData = A3(_fbedussi$elm_boilerplate$Models$LoginData, model.loginData.email, '', true);
+				return {
+					ctor: '_Tuple2',
+					_0: A4(_fbedussi$elm_boilerplate$Models$Model, _fbedussi$elm_boilerplate$Models$Home, model.data, loginData, ''),
+					_1: _fbedussi$elm_boilerplate$OutsideInfo$sendInfoOutside(
+						_fbedussi$elm_boilerplate$OutsideInfo$OpenDb(_p3._0))
+				};
+			case 'DbOpened':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _fbedussi$elm_boilerplate$OutsideInfo$sendInfoOutside(_fbedussi$elm_boilerplate$OutsideInfo$ReadAllData)
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{data: _p3._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
+var _fbedussi$elm_boilerplate$OutsideInfo$LoginRequest = function (a) {
+	return {ctor: 'LoginRequest', _0: a};
+};
+var _fbedussi$elm_boilerplate$OutsideInfo$NewData = function (a) {
+	return {ctor: 'NewData', _0: a};
+};
+var _fbedussi$elm_boilerplate$OutsideInfo$DbOpened = {ctor: 'DbOpened'};
+var _fbedussi$elm_boilerplate$OutsideInfo$UserLoggedIn = function (a) {
+	return {ctor: 'UserLoggedIn', _0: a};
+};
+var _fbedussi$elm_boilerplate$OutsideInfo$getInfoFromOutside = F2(
+	function (tagger, onError) {
+		return _fbedussi$elm_boilerplate$OutsideInfo$infoForElm(
+			function (outsideInfo) {
+				var _p4 = outsideInfo.tag;
+				switch (_p4) {
+					case 'loginResult':
+						var _p5 = _fbedussi$elm_boilerplate$Decoder$decodeUser(outsideInfo.data);
+						if (_p5.ctor === 'Ok') {
+							return tagger(
+								_fbedussi$elm_boilerplate$OutsideInfo$UserLoggedIn(_p5._0));
+						} else {
+							return onError(_p5._0);
+						}
+					case 'dbOpened':
+						var _p6 = _fbedussi$elm_boilerplate$Decoder$decodeDbOpened(outsideInfo.data);
+						if (_p6.ctor === 'Ok') {
+							return tagger(_fbedussi$elm_boilerplate$OutsideInfo$DbOpened);
+						} else {
+							return onError(_p6._0);
+						}
+					case 'allData':
+						var _p7 = _fbedussi$elm_boilerplate$Decoder$decodeData(outsideInfo.data);
+						if (_p7.ctor === 'Ok') {
+							return tagger(
+								_fbedussi$elm_boilerplate$OutsideInfo$NewData(_p7._0));
+						} else {
+							return onError(_p7._0);
+						}
+					default:
+						return onError(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'Unexpected info from outside: ',
+								_elm_lang$core$Basics$toString(outsideInfo)));
+				}
+			});
+	});
+
+var _fbedussi$elm_boilerplate$Msgs$LogErr = function (a) {
+	return {ctor: 'LogErr', _0: a};
+};
+var _fbedussi$elm_boilerplate$Msgs$Outside = function (a) {
+	return {ctor: 'Outside', _0: a};
+};
 var _fbedussi$elm_boilerplate$Msgs$RegisterColor = F3(
 	function (a, b, c) {
 		return {ctor: 'RegisterColor', _0: a, _1: b, _2: c};
@@ -10272,13 +10516,6 @@ var _fbedussi$elm_boilerplate$Msgs$HandleClick = F2(
 	function (a, b) {
 		return {ctor: 'HandleClick', _0: a, _1: b};
 	});
-var _fbedussi$elm_boilerplate$Msgs$NewData = function (a) {
-	return {ctor: 'NewData', _0: a};
-};
-var _fbedussi$elm_boilerplate$Msgs$UserAuthenticated = function (a) {
-	return {ctor: 'UserAuthenticated', _0: a};
-};
-var _fbedussi$elm_boilerplate$Msgs$ReadAllData = {ctor: 'ReadAllData'};
 var _fbedussi$elm_boilerplate$Msgs$Login = {ctor: 'Login'};
 var _fbedussi$elm_boilerplate$Msgs$UpdateLoginData = F2(
 	function (a, b) {
@@ -10329,84 +10566,8 @@ var _fbedussi$elm_boilerplate$Init$init = function (location) {
 	};
 };
 
-var _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebaseDb = _elm_lang$core$Native_Platform.outgoingPort(
-	'sendCmdToFirebaseDb',
-	function (v) {
-		return {name: v.name, payload: v.payload};
-	});
-var _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebaseAuth = _elm_lang$core$Native_Platform.outgoingPort(
-	'sendCmdToFirebaseAuth',
-	function (v) {
-		return {name: v.name, payload: v.payload};
-	});
-var _fbedussi$elm_boilerplate$Firebase$listenToFirebaseDbResponse = _elm_lang$core$Native_Platform.incomingPort('listenToFirebaseDbResponse', _elm_lang$core$Json_Decode$value);
-var _fbedussi$elm_boilerplate$Firebase$listenToFirebaseAuthResponse = _elm_lang$core$Native_Platform.incomingPort('listenToFirebaseAuthResponse', _elm_lang$core$Json_Decode$value);
-
-var _fbedussi$elm_boilerplate$Subscriptions$decodeUser = function (value) {
-	return A2(_elm_lang$core$Json_Decode$decodeValue, _elm_lang$core$Json_Decode$string, value);
-};
-var _fbedussi$elm_boilerplate$Subscriptions$colorDecoder = A2(
-	_elm_lang$core$Json_Decode$andThen,
-	function (str) {
-		var _p0 = str;
-		switch (_p0) {
-			case 'red':
-				return _elm_lang$core$Json_Decode$succeed(_fbedussi$elm_boilerplate$Models$Red);
-			case 'green':
-				return _elm_lang$core$Json_Decode$succeed(_fbedussi$elm_boilerplate$Models$Green);
-			default:
-				return _elm_lang$core$Json_Decode$fail(
-					A2(_elm_lang$core$Basics_ops['++'], 'Unknown color: ', _p0));
-		}
-	},
-	_elm_lang$core$Json_Decode$string);
-var _fbedussi$elm_boilerplate$Subscriptions$passageDataDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	_fbedussi$elm_boilerplate$Models$PassageData,
-	A2(_elm_lang$core$Json_Decode$field, 'time', _elm_lang$core$Json_Decode$float),
-	A2(_elm_lang$core$Json_Decode$field, 'color', _fbedussi$elm_boilerplate$Subscriptions$colorDecoder));
-var _fbedussi$elm_boilerplate$Subscriptions$decodeDirection = A2(
-	_elm_lang$core$Json_Decode$map,
-	_elm_lang$core$List$map(_elm_lang$core$Tuple$second),
-	_elm_lang$core$Json_Decode$keyValuePairs(_fbedussi$elm_boilerplate$Subscriptions$passageDataDecoder));
-var _fbedussi$elm_boilerplate$Subscriptions$dataDecoder = A5(
-	_elm_lang$core$Json_Decode$map4,
-	_fbedussi$elm_boilerplate$Models$Data,
-	A2(_elm_lang$core$Json_Decode$field, 'north', _fbedussi$elm_boilerplate$Subscriptions$decodeDirection),
-	A2(_elm_lang$core$Json_Decode$field, 'south', _fbedussi$elm_boilerplate$Subscriptions$decodeDirection),
-	A2(_elm_lang$core$Json_Decode$field, 'east', _fbedussi$elm_boilerplate$Subscriptions$decodeDirection),
-	A2(_elm_lang$core$Json_Decode$field, 'west', _fbedussi$elm_boilerplate$Subscriptions$decodeDirection));
-var _fbedussi$elm_boilerplate$Subscriptions$decodeData = function (value) {
-	return A2(_elm_lang$core$Json_Decode$decodeValue, _fbedussi$elm_boilerplate$Subscriptions$dataDecoder, value);
-};
 var _fbedussi$elm_boilerplate$Subscriptions$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$batch(
-		{
-			ctor: '::',
-			_0: _fbedussi$elm_boilerplate$Firebase$listenToFirebaseDbResponse(
-				function (_p1) {
-					return _fbedussi$elm_boilerplate$Msgs$NewData(
-						_fbedussi$elm_boilerplate$Subscriptions$decodeData(_p1));
-				}),
-			_1: {
-				ctor: '::',
-				_0: _fbedussi$elm_boilerplate$Firebase$listenToFirebaseAuthResponse(
-					function (value) {
-						return _fbedussi$elm_boilerplate$Msgs$UserAuthenticated(
-							_fbedussi$elm_boilerplate$Subscriptions$decodeUser(value));
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-
-var _fbedussi$elm_boilerplate$Helpers$onLinkClick = function (message) {
-	var options = {stopPropagation: false, preventDefault: true};
-	return A3(
-		_elm_lang$html$Html_Events$onWithOptions,
-		'click',
-		options,
-		_elm_lang$core$Json_Decode$succeed(message));
+	return A2(_fbedussi$elm_boilerplate$OutsideInfo$getInfoFromOutside, _fbedussi$elm_boilerplate$Msgs$Outside, _fbedussi$elm_boilerplate$Msgs$LogErr);
 };
 
 var _fbedussi$elm_boilerplate$Update$updateData = F3(
@@ -10471,6 +10632,16 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 	function (msg, model) {
 		var _p1 = msg;
 		switch (_p1.ctor) {
+			case 'LogErr':
+				var _p2 = _p1._0;
+				var log = A2(_elm_lang$core$Debug$log, 'Error: ', _p2);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{errorMsg: _p2}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			case 'ChangeLocation':
 				return {
 					ctor: '_Tuple2',
@@ -10487,10 +10658,10 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateLoginData':
-				var _p3 = _p1._1;
+				var _p4 = _p1._1;
 				var newLoginData = model.loginData;
-				var _p2 = _p1._0;
-				if (_p2.ctor === 'Email') {
+				var _p3 = _p1._0;
+				if (_p3.ctor === 'Email') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -10498,7 +10669,7 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 							{
 								loginData: _elm_lang$core$Native_Utils.update(
 									newLoginData,
-									{email: _p3})
+									{email: _p4})
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -10510,144 +10681,20 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 							{
 								loginData: _elm_lang$core$Native_Utils.update(
 									newLoginData,
-									{password: _p3})
+									{password: _p4})
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
 			case 'Login':
-				var loginPayload = _elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'method',
-							_1: _elm_lang$core$Json_Encode$string('email')
-						},
-						_1: {
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'email',
-								_1: _elm_lang$core$Json_Encode$string(model.loginData.email)
-							},
-							_1: {
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'password',
-									_1: _elm_lang$core$Json_Encode$string(model.loginData.password)
-								},
-								_1: {ctor: '[]'}
-							}
-						}
-					});
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebaseAuth(
-						A2(
-							_fbedussi$elm_boilerplate$Models$FirebaseCmd,
-							'logIn',
-							A2(_elm_lang$core$Json_Encode$encode, 0, loginPayload)))
+					_1: _fbedussi$elm_boilerplate$OutsideInfo$sendInfoOutside(
+						_fbedussi$elm_boilerplate$OutsideInfo$LoginRequest(model.loginData))
 				};
-			case 'UserAuthenticated':
-				if (_p1._0.ctor === 'Ok') {
-					var _p5 = _p1._0._0;
-					var log = A2(_elm_lang$core$Debug$log, 'ELM UID', _p5);
-					var readAllPayload = _elm_lang$core$Json_Encode$object(
-						{
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'storeName',
-								_1: _elm_lang$core$Json_Encode$string('data')
-							},
-							_1: {ctor: '[]'}
-						});
-					var loginData = A3(_fbedussi$elm_boilerplate$Models$LoginData, model.loginData.email, '', true);
-					var openPayload = _elm_lang$core$Json_Encode$object(
-						{
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'userUid',
-								_1: _elm_lang$core$Json_Encode$string(_p5)
-							},
-							_1: {ctor: '[]'}
-						});
-					return {
-						ctor: '_Tuple2',
-						_0: A4(_fbedussi$elm_boilerplate$Models$Model, _fbedussi$elm_boilerplate$Models$Home, model.data, loginData, ''),
-						_1: A2(
-							_elm_lang$core$Task$perform,
-							function (_p4) {
-								return _fbedussi$elm_boilerplate$Msgs$NoAction;
-							},
-							_elm_lang$core$Task$sequence(
-								{
-									ctor: '::',
-									_0: _elm_lang$core$Task$succeed(
-										_fbedussi$elm_boilerplate$Firebase$sendCmdToFirebaseDb(
-											A2(
-												_fbedussi$elm_boilerplate$Models$FirebaseCmd,
-												'openDb',
-												A2(_elm_lang$core$Json_Encode$encode, 0, openPayload)))),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$core$Task$succeed(
-											_fbedussi$elm_boilerplate$Firebase$sendCmdToFirebaseDb(
-												A2(
-													_fbedussi$elm_boilerplate$Models$FirebaseCmd,
-													'readAll',
-													A2(_elm_lang$core$Json_Encode$encode, 0, readAllPayload)))),
-										_1: {ctor: '[]'}
-									}
-								}))
-					};
-				} else {
-					var log = A2(_elm_lang$core$Debug$log, 'Auth Error', _p1._0._0);
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{errorMsg: 'wrong email or passowrd'}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				}
-			case 'ReadAllData':
-				var readAllPayload = _elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'storeName',
-							_1: _elm_lang$core$Json_Encode$string('data')
-						},
-						_1: {ctor: '[]'}
-					});
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebaseDb(
-						A2(
-							_fbedussi$elm_boilerplate$Models$FirebaseCmd,
-							'readAll',
-							A2(_elm_lang$core$Json_Encode$encode, 0, readAllPayload)))
-				};
-			case 'NewData':
-				if (_p1._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{data: _p1._0._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					var log = A2(_elm_lang$core$Debug$log, 'newData error', _p1._0._0);
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
+			case 'Outside':
+				return A2(_fbedussi$elm_boilerplate$OutsideInfo$switchInfoForElm, _p1._0, model);
 			case 'HandleClick':
 				return {
 					ctor: '_Tuple2',
@@ -10657,69 +10704,18 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 						A2(_fbedussi$elm_boilerplate$Msgs$RegisterColor, _p1._0, _p1._1),
 						_elm_lang$core$Time$now)
 				};
-			case 'RegisterColor':
-				var _p8 = _p1._2;
-				var _p7 = _p1._0;
-				var _p6 = _p1._1;
-				var encodedNewPassageData = _elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'time',
-							_1: _elm_lang$core$Json_Encode$float(_p8)
-						},
-						_1: {
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'color',
-								_1: _elm_lang$core$Json_Encode$string(
-									_elm_lang$core$String$toLower(
-										_elm_lang$core$Basics$toString(_p6)))
-							},
-							_1: {ctor: '[]'}
-						}
-					});
-				var createPayload = _elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'storeName',
-							_1: _elm_lang$core$Json_Encode$string(
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									'data/',
-									_elm_lang$core$String$toLower(
-										_elm_lang$core$Basics$toString(_p7))))
-						},
-						_1: {
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'content',
-								_1: _elm_lang$core$Json_Encode$string(
-									A2(_elm_lang$core$Json_Encode$encode, 0, encodedNewPassageData))
-							},
-							_1: {ctor: '[]'}
-						}
-					});
-				var newPassageData = A2(_fbedussi$elm_boilerplate$Models$PassageData, _p8, _p6);
-				var updatedData = A3(_fbedussi$elm_boilerplate$Update$updateData, model.data, _p7, newPassageData);
+			default:
+				var _p5 = _p1._0;
+				var newPassageData = A2(_fbedussi$elm_boilerplate$Models$PassageData, _p1._2, _p1._1);
+				var updatedData = A3(_fbedussi$elm_boilerplate$Update$updateData, model.data, _p5, newPassageData);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{data: updatedData}),
-					_1: _fbedussi$elm_boilerplate$Firebase$sendCmdToFirebaseDb(
-						A2(
-							_fbedussi$elm_boilerplate$Models$FirebaseCmd,
-							'create',
-							A2(_elm_lang$core$Json_Encode$encode, 0, createPayload)))
+					_1: _fbedussi$elm_boilerplate$OutsideInfo$sendInfoOutside(
+						A2(_fbedussi$elm_boilerplate$OutsideInfo$WriteData, _p5, newPassageData))
 				};
-			default:
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
 
@@ -10975,6 +10971,15 @@ var _fbedussi$elm_boilerplate$Graphics$trafficLight = function (direction) {
 				}),
 			_1: {ctor: '[]'}
 		});
+};
+
+var _fbedussi$elm_boilerplate$Helpers$onLinkClick = function (message) {
+	var options = {stopPropagation: false, preventDefault: true};
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'click',
+		options,
+		_elm_lang$core$Json_Decode$succeed(message));
 };
 
 var _fbedussi$elm_boilerplate$HomePage$getTotalRedPercentage = function (model) {

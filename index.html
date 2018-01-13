@@ -11,35 +11,7 @@
     <div id="main"></div>
     <script src="backend.js"></script>
     <script src="app.js"></script>
-    <script>
-        var node = document.getElementById('main');
-        var app = Elm.App.embed(node);
-        app.ports.sendCmdToFirebaseAuth.subscribe(function(cmd) {
-            debugger;
-            var payload = JSON.parse(cmd.payload);
-            authInterface[cmd.name](payload)
-                .then((user) => {
-                    debugger;
-                    app.ports.listenToFirebaseAuthResponse.send(user.uid)
-                })
-                .catch((error) => {
-                    //debugger;
-                    app.ports.listenToFirebaseAuthResponse.send(error)
-                })
-        });
-        app.ports.sendCmdToFirebaseDb.subscribe(function(cmd) {
-            var payload = JSON.parse(cmd.payload);
-            if (payload.hasOwnProperty('content')) {
-                payload.content = JSON.parse(payload.content);
-            }
-            debugger;
-            dbInterface[cmd.name](payload)
-                .then((result, error) => {
-                    debugger;
-                    app.ports.listenToFirebaseDbResponse.send(error || result ? result[0] : null)
-                })
-        });
-    </script>
+    <script src="initElm.js"></script>
 </body>
 
 </html>

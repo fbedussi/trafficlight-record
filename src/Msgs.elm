@@ -2,6 +2,7 @@ module Msgs exposing (..)
 
 import Models exposing (Color, Data, Direction, Email, LoginField, Password, UserUid)
 import Navigation exposing (Location)
+import OutsideInfo exposing (InfoForElm)
 import Time exposing (Time)
 
 
@@ -10,9 +11,7 @@ type Msg
     | ChangeLocation String
     | UpdateLoginData LoginField String
     | Login
-    | ReadAllData
-    | UserAuthenticated (Result String UserUid)
-    | NewData (Result String Data)
     | HandleClick Direction Color
     | RegisterColor Direction Color Time
-    | NoAction
+    | Outside InfoForElm
+    | LogErr String

@@ -1,9 +1,9 @@
 module LoginPage exposing (..)
 
-import Html exposing (Html, div, button, input, label, text)
-import Html.Attributes exposing (class, type_, id, name, value, for, placeholder, hidden)
-import Html.Events exposing (onSubmit, onInput)
-import Models exposing (Model, Password, Email)
+import Html exposing (Html, button, div, input, label, text)
+import Html.Attributes exposing (class, for, hidden, id, name, placeholder, type_, value)
+import Html.Events exposing (onInput, onSubmit)
+import Models exposing (Email, Model, Password)
 import Msgs exposing (..)
 
 
@@ -15,8 +15,14 @@ loginPage model =
     in
     div
         [ class "loginPage" ]
-        [ div 
-            [ hidden (if String.isEmpty model.errorMsg then True else False) ]
+        [ div
+            [ hidden
+                (if String.isEmpty model.errorMsg then
+                    True
+                 else
+                    False
+                )
+            ]
             [ text model.errorMsg ]
         , Html.form
             [ class "loginForm"

@@ -1,12 +1,9 @@
 module Update exposing (update)
 
-import Firebase exposing (sendCmdToFirebaseAuth, sendCmdToFirebaseDb)
-import Helpers exposing (..)
-import Init exposing (init)
-import Json.Encode exposing (..)
 import Models exposing (..)
 import Msgs exposing (..)
 import Navigation exposing (newUrl)
+import OutsideInfo exposing (sendInfoOutside, switchInfoForElm)
 import Routing exposing (parseLocation)
 import Task
 import Time exposing (Time)
@@ -15,6 +12,13 @@ import Time exposing (Time)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        LogErr err ->
+            let
+                log =
+                    Debug.log "Error: " err
+            in
+            ( { model | errorMsg = err }, Cmd.none )
+
         ChangeLocation path ->
             ( model, newUrl path )
 
@@ -38,66 +42,10 @@ update msg model =
                     ( { model | loginData = { newLoginData | password = value } }, Cmd.none )
 
         Login ->
-            let
-                loginPayload =
-                    object
-                        [ ( "method", string "email" )
-                        , ( "email", string model.loginData.email )
-                        , ( "password", string model.loginData.password )
-                        ]
-            in
-            ( model, sendCmdToFirebaseAuth (FirebaseCmd "logIn" (encode 0 loginPayload)) )
+            ( model, OutsideInfo.LoginRequest model.loginData |> sendInfoOutside )
 
-        UserAuthenticated (Ok userUid) ->
-            let
-                openPayload =
-                    object
-                        [ ( "userUid", string userUid ) ]
-                
-                loginData = LoginData
-                    model.loginData.email
-                    ""
-                    True
-
-                readAllPayload =
-                    object
-                        [ ( "storeName", string "data" ) ]
-
-                log = Debug.log "ELM UID" userUid
-            in
-            ( Model
-                Home
-                model.data
-                loginData
-                ""
-            , Task.perform (\_ -> NoAction) (Task.sequence [ (FirebaseCmd "openDb" (encode 0 openPayload) |> sendCmdToFirebaseDb), (FirebaseCmd "readAll" (encode 0 readAllPayload) |> sendCmdToFirebaseDb)])
-            
-            )
-        
-        UserAuthenticated (Err error) ->
-            let
-                log = Debug.log "Auth Error" error
-            in
-            ( {model | errorMsg = "wrong email or passowrd" }, Cmd.none )
-
-        ReadAllData ->
-            let
-                readAllPayload =
-                    object
-                        [ ( "storeName", string "data" ) ]
-            in
-            ( model, FirebaseCmd "readAll" (encode 0 readAllPayload) |> sendCmdToFirebaseDb )
-
-
-        NewData (Ok data) ->
-            ( { model | data = data }, Cmd.none )
-
-        NewData (Err error) ->
-            let
-                log =
-                    Debug.log "newData error" error
-            in
-            ( model, Cmd.none )
+        Outside infoForElm ->
+            switchInfoForElm infoForElm model
 
         HandleClick direction color ->
             ( model, Task.perform (RegisterColor direction color) Time.now )
@@ -107,25 +55,10 @@ update msg model =
                 newPassageData =
                     PassageData time color
 
-                encodedNewPassageData =
-                    object
-                        [ ( "time", float time )
-                        , ( "color", color |> toString |> String.toLower |> string )
-                        ]
-
                 updatedData =
                     updateData model.data direction newPassageData
-
-                createPayload =
-                    object
-                        [ ( "storeName", string ("data/" ++ (direction |> toString |> String.toLower)) )
-                        , ( "content", string (encode 0 encodedNewPassageData) )
-                        ]
             in
-            ( { model | data = updatedData }, sendCmdToFirebaseDb (FirebaseCmd "create" (encode 0 createPayload)) )
-        
-        NoAction ->
-            (model, Cmd.none)
+            ( { model | data = updatedData }, OutsideInfo.WriteData direction newPassageData |> sendInfoOutside )
 
 
 updateData : Data -> Direction -> PassageData -> Data

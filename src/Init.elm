@@ -1,7 +1,6 @@
 module Init exposing (..)
 
-import Json.Encode exposing (..)
-import Models exposing (FirebaseCmd, Model, resetModel)
+import Models exposing (Model, resetModel)
 import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import Routing exposing (parseLocation)
