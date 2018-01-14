@@ -62,7 +62,7 @@ app.ports.infoForOutside.subscribe(function (cmd) {
         case 'writeData':
             var storeName = `data/${payload.direction}`;
             var content = payload.passageData;
-            dbInterface.create(storeName, content)
+            dbInterface.create({storeName, content})
                 .then((result) => {
                     console.log(result);
                     // app.ports.infoForElm.send({
