@@ -11230,7 +11230,7 @@ var _fbedussi$elm_boilerplate$HistoryPage$renderColor = function (passageData) {
 		});
 };
 var _fbedussi$elm_boilerplate$HistoryPage$history = function (model) {
-	var homePath = '/';
+	var homePath = '/home';
 	return A2(
 		_elm_lang$html$Html$div,
 		{

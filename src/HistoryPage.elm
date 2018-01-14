@@ -32,7 +32,7 @@ history : Model -> Html Msg
 history model =
     let
         homePath =
-            "/"
+            "/home"
     in
     div
         [ class "history" ]
