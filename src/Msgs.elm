@@ -13,5 +13,5 @@ type Msg
     | Login
     | HandleClick Direction Color
     | RegisterColor Direction Color Time
-    | Outside InfoForElm
+    | Outside (Result String InfoForElm)
     | LogErr String

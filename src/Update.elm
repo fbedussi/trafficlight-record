@@ -26,8 +26,13 @@ update msg model =
             let
                 newRoute =
                     parseLocation location
+
+                log = Debug.log "New location" newRoute
             in
-            ( { model | route = newRoute }, Cmd.none )
+            if newRoute == LoginPage && model.loginData.authenticated then
+                ( model, newUrl "/home" )
+            else
+                ( { model | route = newRoute }, Cmd.none )
 
         UpdateLoginData loginField value ->
             let

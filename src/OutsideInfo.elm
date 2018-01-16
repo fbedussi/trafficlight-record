@@ -73,44 +73,44 @@ sendInfoOutside info =
             infoForOutside { tag = "writeData", data = writeDataPayload }
 
 
-getInfoFromOutside : (InfoForElm -> msg) -> (String -> msg) -> Sub msg
-getInfoFromOutside tagger onError =
+getInfoFromOutside : (Result String InfoForElm -> msg) -> Sub msg
+getInfoFromOutside tagger =
     infoForElm
         (\outsideInfo ->
             case outsideInfo.tag of
                 "loginResult" ->
                     case decodeUser outsideInfo.data of
                         Ok userUid ->
-                            tagger <| UserLoggedIn userUid
+                            tagger <| Ok <| UserLoggedIn userUid
 
                         Err e ->
-                            onError e
+                            tagger <| Err "Bad email or password"
 
                 "dbOpened" ->
                     case decodeDbOpened outsideInfo.data of
                         Ok dbOpened ->
-                            tagger <| DbOpened
+                            tagger <| Ok <| DbOpened
 
                         Err e ->
-                            onError e
+                            tagger <| Err "Error opening DB"
 
                 "allData" ->
                     case decodeData outsideInfo.data of
                         Ok data ->
-                            tagger <| NewData data
+                            tagger <| Ok <| NewData data
 
                         Err e ->
-                            onError e
+                            tagger <| Err "Error retriving data"
 
                 _ ->
-                    onError <| "Unexpected info from outside: " ++ toString outsideInfo
+                    tagger <| Err <| "Unkonw error communicating with backend"
         )
 
 
-switchInfoForElm : InfoForElm -> Model -> ( Model, Cmd msg )
+switchInfoForElm : Result String InfoForElm -> Model -> ( Model, Cmd msg )
 switchInfoForElm infoForElm model =
     case infoForElm of
-        UserLoggedIn userUid ->
+        Ok (UserLoggedIn userUid) ->
             let
                 loginData =
                     LoginData
@@ -126,8 +126,11 @@ switchInfoForElm infoForElm model =
             , OpenDb userUid |> sendInfoOutside
             )
 
-        DbOpened ->
+        Ok DbOpened ->
             ( model, sendInfoOutside ReadAllData )
 
-        NewData data ->
+        Ok (NewData data) ->
             ( { model | data = data }, Cmd.none )
+
+        Err message ->
+            ( { model | errorMsg = message }, Cmd.none )

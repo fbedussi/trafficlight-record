@@ -1,6 +1,6 @@
 module LoginPage exposing (..)
 
-import Html exposing (Html, button, div, input, label, text)
+import Html exposing (Html, button, div, input, label, text, p)
 import Html.Attributes exposing (class, for, hidden, id, name, placeholder, type_, value)
 import Html.Events exposing (onInput, onSubmit)
 import Models exposing (Email, Model, Password)
@@ -24,6 +24,18 @@ loginPage model =
                 )
             ]
             [ text model.errorMsg ]
+        , div 
+            [ class "demoData"]
+            [ p
+                []
+                [ text "To login as a demo user insert:" ]
+            , p
+                []
+                [ text "email: demo@demo.com" ]
+            , p
+                []
+                [ text "password: demodemo" ]
+            ]
         , Html.form
             [ class "loginForm"
             , onSubmit Login
@@ -32,7 +44,7 @@ loginPage model =
                 [ class "label"
                 , for "emailField"
                 ]
-                []
+                [ text "e-mail"]
             , input
                 [ class "textInput"
                 , id "emailField"
@@ -47,7 +59,7 @@ loginPage model =
                 [ class "label"
                 , for "passwordField"
                 ]
-                []
+                [ text "password" ]
             , input
                 [ class "textInput"
                 , id "passwordField"

@@ -10428,29 +10428,39 @@ var _fbedussi$elm_boilerplate$OutsideInfo$OpenDb = function (a) {
 var _fbedussi$elm_boilerplate$OutsideInfo$switchInfoForElm = F2(
 	function (infoForElm, model) {
 		var _p3 = infoForElm;
-		switch (_p3.ctor) {
-			case 'UserLoggedIn':
-				var loginData = A3(_fbedussi$elm_boilerplate$Models$LoginData, model.loginData.email, '', true);
-				return {
-					ctor: '_Tuple2',
-					_0: A4(_fbedussi$elm_boilerplate$Models$Model, _fbedussi$elm_boilerplate$Models$Home, model.data, loginData, ''),
-					_1: _fbedussi$elm_boilerplate$OutsideInfo$sendInfoOutside(
-						_fbedussi$elm_boilerplate$OutsideInfo$OpenDb(_p3._0))
-				};
-			case 'DbOpened':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _fbedussi$elm_boilerplate$OutsideInfo$sendInfoOutside(_fbedussi$elm_boilerplate$OutsideInfo$ReadAllData)
-				};
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{data: _p3._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+		if (_p3.ctor === 'Ok') {
+			switch (_p3._0.ctor) {
+				case 'UserLoggedIn':
+					var loginData = A3(_fbedussi$elm_boilerplate$Models$LoginData, model.loginData.email, '', true);
+					return {
+						ctor: '_Tuple2',
+						_0: A4(_fbedussi$elm_boilerplate$Models$Model, _fbedussi$elm_boilerplate$Models$Home, model.data, loginData, ''),
+						_1: _fbedussi$elm_boilerplate$OutsideInfo$sendInfoOutside(
+							_fbedussi$elm_boilerplate$OutsideInfo$OpenDb(_p3._0._0))
+					};
+				case 'DbOpened':
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _fbedussi$elm_boilerplate$OutsideInfo$sendInfoOutside(_fbedussi$elm_boilerplate$OutsideInfo$ReadAllData)
+					};
+				default:
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{data: _p3._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+			}
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{errorMsg: _p3._0}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
 		}
 	});
 var _fbedussi$elm_boilerplate$OutsideInfo$LoginRequest = function (a) {
@@ -10463,44 +10473,46 @@ var _fbedussi$elm_boilerplate$OutsideInfo$DbOpened = {ctor: 'DbOpened'};
 var _fbedussi$elm_boilerplate$OutsideInfo$UserLoggedIn = function (a) {
 	return {ctor: 'UserLoggedIn', _0: a};
 };
-var _fbedussi$elm_boilerplate$OutsideInfo$getInfoFromOutside = F2(
-	function (tagger, onError) {
-		return _fbedussi$elm_boilerplate$OutsideInfo$infoForElm(
-			function (outsideInfo) {
-				var _p4 = outsideInfo.tag;
-				switch (_p4) {
-					case 'loginResult':
-						var _p5 = _fbedussi$elm_boilerplate$Decoder$decodeUser(outsideInfo.data);
-						if (_p5.ctor === 'Ok') {
-							return tagger(
-								_fbedussi$elm_boilerplate$OutsideInfo$UserLoggedIn(_p5._0));
-						} else {
-							return onError(_p5._0);
-						}
-					case 'dbOpened':
-						var _p6 = _fbedussi$elm_boilerplate$Decoder$decodeDbOpened(outsideInfo.data);
-						if (_p6.ctor === 'Ok') {
-							return tagger(_fbedussi$elm_boilerplate$OutsideInfo$DbOpened);
-						} else {
-							return onError(_p6._0);
-						}
-					case 'allData':
-						var _p7 = _fbedussi$elm_boilerplate$Decoder$decodeData(outsideInfo.data);
-						if (_p7.ctor === 'Ok') {
-							return tagger(
-								_fbedussi$elm_boilerplate$OutsideInfo$NewData(_p7._0));
-						} else {
-							return onError(_p7._0);
-						}
-					default:
-						return onError(
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'Unexpected info from outside: ',
-								_elm_lang$core$Basics$toString(outsideInfo)));
-				}
-			});
-	});
+var _fbedussi$elm_boilerplate$OutsideInfo$getInfoFromOutside = function (tagger) {
+	return _fbedussi$elm_boilerplate$OutsideInfo$infoForElm(
+		function (outsideInfo) {
+			var _p4 = outsideInfo.tag;
+			switch (_p4) {
+				case 'loginResult':
+					var _p5 = _fbedussi$elm_boilerplate$Decoder$decodeUser(outsideInfo.data);
+					if (_p5.ctor === 'Ok') {
+						return tagger(
+							_elm_lang$core$Result$Ok(
+								_fbedussi$elm_boilerplate$OutsideInfo$UserLoggedIn(_p5._0)));
+					} else {
+						return tagger(
+							_elm_lang$core$Result$Err('Bad email or password'));
+					}
+				case 'dbOpened':
+					var _p6 = _fbedussi$elm_boilerplate$Decoder$decodeDbOpened(outsideInfo.data);
+					if (_p6.ctor === 'Ok') {
+						return tagger(
+							_elm_lang$core$Result$Ok(_fbedussi$elm_boilerplate$OutsideInfo$DbOpened));
+					} else {
+						return tagger(
+							_elm_lang$core$Result$Err('Error opening DB'));
+					}
+				case 'allData':
+					var _p7 = _fbedussi$elm_boilerplate$Decoder$decodeData(outsideInfo.data);
+					if (_p7.ctor === 'Ok') {
+						return tagger(
+							_elm_lang$core$Result$Ok(
+								_fbedussi$elm_boilerplate$OutsideInfo$NewData(_p7._0)));
+					} else {
+						return tagger(
+							_elm_lang$core$Result$Err('Error retriving data'));
+					}
+				default:
+					return tagger(
+						_elm_lang$core$Result$Err('Unkonw error communicating with backend'));
+			}
+		});
+};
 
 var _fbedussi$elm_boilerplate$Msgs$LogErr = function (a) {
 	return {ctor: 'LogErr', _0: a};
@@ -10567,7 +10579,7 @@ var _fbedussi$elm_boilerplate$Init$init = function (location) {
 };
 
 var _fbedussi$elm_boilerplate$Subscriptions$subscriptions = function (model) {
-	return A2(_fbedussi$elm_boilerplate$OutsideInfo$getInfoFromOutside, _fbedussi$elm_boilerplate$Msgs$Outside, _fbedussi$elm_boilerplate$Msgs$LogErr);
+	return _fbedussi$elm_boilerplate$OutsideInfo$getInfoFromOutside(_fbedussi$elm_boilerplate$Msgs$Outside);
 };
 
 var _fbedussi$elm_boilerplate$Update$updateData = F3(
@@ -10650,7 +10662,12 @@ var _fbedussi$elm_boilerplate$Update$update = F2(
 				};
 			case 'OnLocationChange':
 				var newRoute = _fbedussi$elm_boilerplate$Routing$parseLocation(_p1._0);
-				return {
+				var log = A2(_elm_lang$core$Debug$log, 'New location', newRoute);
+				return (_elm_lang$core$Native_Utils.eq(newRoute, _fbedussi$elm_boilerplate$Models$LoginPage) && model.loginData.authenticated) ? {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _elm_lang$navigation$Navigation$newUrl('/home')
+				} : {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
@@ -11347,105 +11364,104 @@ var _fbedussi$elm_boilerplate$LoginPage$loginPage = function (model) {
 			_1: {
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$form,
+					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('loginForm'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onSubmit(_fbedussi$elm_boilerplate$Msgs$Login),
-							_1: {ctor: '[]'}
-						}
+						_0: _elm_lang$html$Html_Attributes$class('demoData'),
+						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$label,
+							_elm_lang$html$Html$p,
+							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('label'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$for('emailField'),
-									_1: {ctor: '[]'}
-								}
-							},
-							{ctor: '[]'}),
+								_0: _elm_lang$html$Html$text('To login as a demo user insert:'),
+								_1: {ctor: '[]'}
+							}),
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$input,
+								_elm_lang$html$Html$p,
+								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('textInput'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$id('emailField'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$name('email'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$type_('email'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$value(model.loginData.email),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$placeholder('me@example.com'),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$html$Html_Events$onInput(
-																function (val) {
-																	return A2(_fbedussi$elm_boilerplate$Msgs$UpdateLoginData, _fbedussi$elm_boilerplate$Models$Email, val);
-																}),
-															_1: {ctor: '[]'}
-														}
-													}
-												}
-											}
-										}
-									}
-								},
-								{ctor: '[]'}),
+									_0: _elm_lang$html$Html$text('email: demo@demo.com'),
+									_1: {ctor: '[]'}
+								}),
 							_1: {
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$label,
+									_elm_lang$html$Html$p,
+									{ctor: '[]'},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('label'),
+										_0: _elm_lang$html$Html$text('password: demodemo'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$form,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('loginForm'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onSubmit(_fbedussi$elm_boilerplate$Msgs$Login),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$label,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('label'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$for('emailField'),
+										_1: {ctor: '[]'}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('e-mail'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$input,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('textInput'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$for('passwordField'),
-											_1: {ctor: '[]'}
-										}
-									},
-									{ctor: '[]'}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$input,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('textInput'),
+											_0: _elm_lang$html$Html_Attributes$id('emailField'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$id('passwordField'),
+												_0: _elm_lang$html$Html_Attributes$name('email'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$name('password'),
+													_0: _elm_lang$html$Html_Attributes$type_('email'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$type_('password'),
+														_0: _elm_lang$html$Html_Attributes$value(model.loginData.email),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$value(model.loginData.password),
+															_0: _elm_lang$html$Html_Attributes$placeholder('me@example.com'),
 															_1: {
 																ctor: '::',
 																_0: _elm_lang$html$Html_Events$onInput(
 																	function (val) {
-																		return A2(_fbedussi$elm_boilerplate$Msgs$UpdateLoginData, _fbedussi$elm_boilerplate$Models$Password, val);
+																		return A2(_fbedussi$elm_boilerplate$Msgs$UpdateLoginData, _fbedussi$elm_boilerplate$Models$Email, val);
 																	}),
 																_1: {ctor: '[]'}
 															}
@@ -11453,33 +11469,86 @@ var _fbedussi$elm_boilerplate$LoginPage$loginPage = function (model) {
 													}
 												}
 											}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$label,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('label'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$for('passwordField'),
+												_1: {ctor: '[]'}
+											}
 										},
-										{ctor: '[]'}),
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('password'),
+											_1: {ctor: '[]'}
+										}),
 									_1: {
 										ctor: '::',
 										_0: A2(
-											_elm_lang$html$Html$button,
+											_elm_lang$html$Html$input,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('btn'),
+												_0: _elm_lang$html$Html_Attributes$class('textInput'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$type_('submit'),
-													_1: {ctor: '[]'}
+													_0: _elm_lang$html$Html_Attributes$id('passwordField'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$name('password'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$type_('password'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$value(model.loginData.password),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Events$onInput(
+																		function (val) {
+																			return A2(_fbedussi$elm_boilerplate$Msgs$UpdateLoginData, _fbedussi$elm_boilerplate$Models$Password, val);
+																		}),
+																	_1: {ctor: '[]'}
+																}
+															}
+														}
+													}
 												}
 											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('login'),
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
+											{ctor: '[]'}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$button,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('btn'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$type_('submit'),
+														_1: {ctor: '[]'}
+													}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('login'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
 									}
 								}
 							}
-						}
-					}),
-				_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };

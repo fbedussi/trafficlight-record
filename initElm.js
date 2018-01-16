@@ -17,7 +17,7 @@ app.ports.infoForOutside.subscribe(function (cmd) {
                 })
                 .catch((error) => {
                     app.ports.infoForElm.send({
-                        tag: 'error',
+                        tag: 'loginResult',
                         data: error
                     })
                 })
@@ -34,7 +34,7 @@ app.ports.infoForOutside.subscribe(function (cmd) {
                 })
                 .catch((error) => {
                     app.ports.infoForElm.send({
-                        tag: 'error',
+                        tag: 'dbOpened',
                         data: error
                     })
                 })
@@ -52,7 +52,7 @@ app.ports.infoForOutside.subscribe(function (cmd) {
                 })
                 .catch((error) => {
                     app.ports.infoForElm.send({
-                        tag: 'error',
+                        tag: 'allData',
                         data: error
                     })
                 })

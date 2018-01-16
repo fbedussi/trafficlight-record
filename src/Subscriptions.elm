@@ -9,4 +9,4 @@ import OutsideInfo exposing (getInfoFromOutside)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    getInfoFromOutside Outside LogErr
+    getInfoFromOutside Outside

@@ -8,13 +8,39 @@ body {
     font-family: sans-serif;
 }
 
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    padding: 1rem;
+    border: solid 1px lightslategray;
+}
+
+.loginPage {
+    padding: 1em;
+}
+
+.demoData {
+    margin-bottom: 1em;
+}
+
+.loginPage input,
+.loginPage button {
+    width:100%;
+    margin-bottom: 1em;
+}
+
+button {
+    appearance: none;
+    border: none;
+}
+
 .homePage {
     /* padding: 5vw; */
     height: 100vh;
 }
 
 .trafficLightsWrapper {
-    background-color: #aade87;
+    background-color: green;
     position: relative;
     height: 90vh;
 }
@@ -24,7 +50,13 @@ body {
     width: 100%;
     left: 0;
     bottom: 0;
-    background-color: #ff8080;
+    background-color:red;
+}
+
+.topContainer,
+.bottomContainer,
+.middleContainer {
+    background-color: rgba(255, 255, 255, 0.7);
 }
 
 .topContainer,
