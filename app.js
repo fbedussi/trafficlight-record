@@ -11227,7 +11227,18 @@ var _fbedussi$elm_boilerplate$HomePage$homePage = function (model) {
 		});
 };
 
-var _fbedussi$elm_boilerplate$HistoryPage$getColorLabel = function (color) {
+var _fbedussi$elm_boilerplate$DataPage$textNodeFromNumber = function (number) {
+	return _elm_lang$html$Html$text(
+		_elm_lang$core$Basics$toString(number));
+};
+var _fbedussi$elm_boilerplate$DataPage$getPercentage = F2(
+	function (number, total) {
+		return (_elm_lang$core$Basics$toFloat(number) / _elm_lang$core$Basics$toFloat(total)) * 100;
+	});
+var _fbedussi$elm_boilerplate$DataPage$getTotalPassages = function (data) {
+	return ((_elm_lang$core$List$length(data.north) + _elm_lang$core$List$length(data.south)) + _elm_lang$core$List$length(data.east)) + _elm_lang$core$List$length(data.west);
+};
+var _fbedussi$elm_boilerplate$DataPage$getColorLabel = function (color) {
 	var _p0 = color;
 	if (_p0.ctor === 'Red') {
 		return 'red';
@@ -11235,24 +11246,27 @@ var _fbedussi$elm_boilerplate$HistoryPage$getColorLabel = function (color) {
 		return 'green';
 	}
 };
-var _fbedussi$elm_boilerplate$HistoryPage$renderColor = function (passageData) {
-	return A2(
-		_elm_lang$html$Html$span,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(
-				_fbedussi$elm_boilerplate$HistoryPage$getColorLabel(passageData.color)),
-			_1: {ctor: '[]'}
-		});
+var _fbedussi$elm_boilerplate$DataPage$renderColor = function (passageData) {
+	return _fbedussi$elm_boilerplate$DataPage$getColorLabel(passageData.color);
 };
-var _fbedussi$elm_boilerplate$HistoryPage$history = function (model) {
+var _fbedussi$elm_boilerplate$DataPage$renderDirectionData = F2(
+	function (direction, passageData) {
+		return _elm_lang$html$Html$text(
+			A2(
+				_elm_lang$core$String$append,
+				A2(_elm_lang$core$Basics_ops['++'], direction, ': '),
+				A2(
+					_elm_lang$core$String$join,
+					', ',
+					A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$DataPage$renderColor, passageData))));
+	});
+var _fbedussi$elm_boilerplate$DataPage$dataPage = function (model) {
 	var homePath = '/home';
 	return A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('history'),
+			_0: _elm_lang$html$Html_Attributes$class('dataPage'),
 			_1: {ctor: '[]'}
 		},
 		{
@@ -11261,78 +11275,289 @@ var _fbedussi$elm_boilerplate$HistoryPage$history = function (model) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('north'),
+					_0: _elm_lang$html$Html_Attributes$class('recapWrapper'),
 					_1: {ctor: '[]'}
 				},
-				A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$HistoryPage$renderColor, model.data.north)),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('south'),
-						_1: {ctor: '[]'}
-					},
-					A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$HistoryPage$renderColor, model.data.south)),
-				_1: {
+				{
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('east'),
+							_0: _elm_lang$html$Html_Attributes$class('recapWrapper-row'),
 							_1: {ctor: '[]'}
 						},
-						A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$HistoryPage$renderColor, model.data.east)),
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$span,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('recapWrapper-label'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Total passages: '),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$span,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('recapWrapper-data'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _fbedussi$elm_boilerplate$DataPage$textNodeFromNumber(
+											_fbedussi$elm_boilerplate$DataPage$getTotalPassages(model.data)),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}),
 					_1: {
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('west'),
+								_0: _elm_lang$html$Html_Attributes$class('recapWrapper-north'),
 								_1: {ctor: '[]'}
 							},
-							A2(_elm_lang$core$List$map, _fbedussi$elm_boilerplate$HistoryPage$renderColor, model.data.west)),
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('North'),
+								_1: {ctor: '[]'}
+							}),
 						_1: {
 							ctor: '::',
 							_0: A2(
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('footer'),
+									_0: _elm_lang$html$Html_Attributes$class('recapWrapper-row'),
 									_1: {ctor: '[]'}
 								},
 								{
 									ctor: '::',
 									_0: A2(
-										_elm_lang$html$Html$a,
+										_elm_lang$html$Html$span,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('homeLink btn'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$href(homePath),
-												_1: {
-													ctor: '::',
-													_0: _fbedussi$elm_boilerplate$Helpers$onLinkClick(
-														_fbedussi$elm_boilerplate$Msgs$ChangeLocation(homePath)),
-													_1: {ctor: '[]'}
-												}
-											}
+											_0: _elm_lang$html$Html_Attributes$class('recapWrapper-label'),
+											_1: {ctor: '[]'}
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('back'),
+											_0: _elm_lang$html$Html$text('Total passages: '),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$span,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('recapWrapper-data'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _fbedussi$elm_boilerplate$DataPage$textNodeFromNumber(
+													_elm_lang$core$List$length(model.data.north)),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('recapWrapper-row'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$span,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('recapWrapper-label'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('% passages: '),
+												_1: {ctor: '[]'}
+											}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$span,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('recapWrapper-data'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text(
+														_elm_lang$core$Basics$toString(
+															A2(
+																_fbedussi$elm_boilerplate$DataPage$getPercentage,
+																_elm_lang$core$List$length(model.data.north),
+																_fbedussi$elm_boilerplate$DataPage$getTotalPassages(model.data)))),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('dataWrapper'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('north'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$span,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: A2(_fbedussi$elm_boilerplate$DataPage$renderDirectionData, 'north', model.data.north),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('south'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$span,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: A2(_fbedussi$elm_boilerplate$DataPage$renderDirectionData, 'south', model.data.south),
 											_1: {ctor: '[]'}
 										}),
 									_1: {ctor: '[]'}
 								}),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('east'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$span,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: A2(_fbedussi$elm_boilerplate$DataPage$renderDirectionData, 'east', model.data.east),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('west'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$span,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: A2(_fbedussi$elm_boilerplate$DataPage$renderDirectionData, 'west', model.data.west),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('footer'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$a,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('homeLink btn'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$href(homePath),
+															_1: {
+																ctor: '::',
+																_0: _fbedussi$elm_boilerplate$Helpers$onLinkClick(
+																	_fbedussi$elm_boilerplate$Msgs$ChangeLocation(homePath)),
+																_1: {ctor: '[]'}
+															}
+														}
+													},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('back'),
+														_1: {ctor: '[]'}
+													}),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
 						}
-					}
-				}
+					}),
+				_1: {ctor: '[]'}
 			}
 		});
 };
@@ -11569,7 +11794,7 @@ var _fbedussi$elm_boilerplate$View$view = function (model) {
 		case 'Home':
 			return _fbedussi$elm_boilerplate$HomePage$homePage(model);
 		case 'History':
-			return _fbedussi$elm_boilerplate$HistoryPage$history(model);
+			return _fbedussi$elm_boilerplate$DataPage$dataPage(model);
 		default:
 			return _fbedussi$elm_boilerplate$View$notFoundView;
 	}

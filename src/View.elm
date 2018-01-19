@@ -1,7 +1,7 @@
 module View exposing (..)
 
 import Graphics exposing (..)
-import HistoryPage exposing (history)
+import DataPage exposing (dataPage)
 import HomePage exposing (homePage)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -23,7 +23,7 @@ view model =
             homePage model
 
         Models.History ->
-            history model
+            dataPage model
 
         Models.NotFoundRoute ->
             notFoundView
